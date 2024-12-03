@@ -43,5 +43,5 @@ dflongcomp <- dflong %>%
 
 View(dflongcomp)
 
-dffinal <- dflongcomp [,-5 ]
-view(dffinal)
+dffinal <- dflongcomp [,-5]
+View(dffinal)
