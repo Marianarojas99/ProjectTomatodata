@@ -11,3 +11,4 @@ View(Data_4_SDiamDryWeight)
 # Remove unwanted data (keep only relevant columns)
 Dfprov4 <- Data_4_SDiamDryWeight[, -c(1:25)]
 View(Dfprov4)
+

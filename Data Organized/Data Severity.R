@@ -4,7 +4,7 @@ Data_1_Severity <- read_excel("DATA/Data (1).xlsx",
 View(Data_1_Severity)
 library(dplyr)
 library(tidyr)
-colnames(Data_1_Severity) <- c("Treatment","Block","Week1","Week3","Week5","Week7","Week9")
+colnames(Data_1_Severity) <- c("Treatment","Block","Week1","Week3","Week5","Week7","Week9", "Total")
 data1 <- Data_1_Severity[-1, ]
 View(data1)
 
