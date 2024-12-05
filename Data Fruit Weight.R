@@ -12,12 +12,5 @@ View(Dfprov3)
 #Name the columns
 colnames(Dfprov3) <- c("Treatment", "Fruits", "Average Weight", "Average Weight of Fruits")
 
-View(Dfprov3)
-
-
-
-
-
-
 
 View(Dfprov3)
