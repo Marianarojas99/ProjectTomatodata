@@ -4,7 +4,7 @@
 library(readxl)
 Data_2_FruitYield_NoFruit <- read_excel("DATA/Data (1).xlsx", 
                                         sheet = "Agronomic")
-View(Data_2_FruitYield_NoFruit)
+
 library(dplyr)
 library(tidyr)
 
@@ -23,7 +23,8 @@ df_yield <- dfnames %>%
                         Cluster4,Cluster5, Cluster6),
                names_to = "Clusters",
                values_to = "Yield")
-dfjustyield <- df_yield[,-c(3:8)]
+
+dfjustyield <- df_yield[, c("Treatment","Clusters","Repetition","Yield")]
 
 
 
@@ -36,19 +37,28 @@ df_fruits <- dfnames %>%
   mutate(
     Clusters = gsub("N$", "", Clusters) 
   )
-dfjustfruit <- df_fruits[,-c(3:8)]
 
 
-dfjustfruit <- dfjustfruit %>% group_by(Treatment, Repetition, Clusters) %>% slice(1) %>% ungroup()
-dfjustyield <- dfjustyield %>% group_by(Treatment, Repetition, Clusters) %>% slice(1) %>% ungroup()
-Dfyield_number <- left_join(dfjustfruit, dfjustyield, by = c("Treatment", "Repetition", "Clusters"))
+dfjustfruit <- df_fruits[,c("Treatment","Clusters","Repetition","Number_of_Fruits")]
 
 
-Bloc <- rep(1:5, each = 18)
-Dfyield_number$Blocks <- Bloc
+
+##Add number of fruits
+dfjustyield$Number_of_Fruits <- dfjustfruit$Number_of_Fruits
 
 
-Dfyield_number <- Dfyield_number %>%
+
+#Add Blocks 
+dfjustyield <- dfjustyield %>%
+  group_by(Treatment) %>%
+  mutate(Block = rep(1:5, each = 18, length.out = n()))
+
+#Reorganized the table 
+
+dfjustyield <- dfjustyield %>%
   select(1:2, 6, 3:5, everything())
-View(Dfyield_number)
-save(df, file = "Dfyield_number.RData")
+
+View(dfjustyield)
+#Covert it csv
+write.csv(dfjustyield,"Dfyield_number.csv", row.names = FALSE)
+
