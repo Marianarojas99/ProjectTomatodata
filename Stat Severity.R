@@ -60,26 +60,51 @@ ggplot(mean_data, aes(x = Weeks, y = Mean_Severity, color = Treatment, group = T
 
 
 
-# Load required libraries for the P value analysis 
+# Load required packages and libraries for determine the differences between treatments in the severity of P. infestans, a repeated measures multivariate analysis of variance and Hotteling test (a = 0.05) 
+install.packages("car")       # For MANOVA
+install.packages("Hotelling") # For Hotelling's T-squared test
+
+# Load required libraries
 library(readxl)
 library(dplyr)
 library(tidyr)
 library(lme4)
-library(lmerTest)  # For p-values in mixed models
-library(emmeans)   # For estimated marginal means
-library(ggplot2)   # For visualization
+library(lmerTest)   # For p-values in mixed models
+library(emmeans)    # For estimated marginal means
+library(ggplot2)    # For visualization
+
+# Ensure necessary packages are installed
+if (!requireNamespace("car", quietly = TRUE)) {
+  install.packages("car")
+}
+if (!requireNamespace("Hotelling", quietly = TRUE)) {
+  install.packages("Hotelling")
+}
+
+library(car)        # For MANOVA
+library(Hotelling)  # For Hotelling's T-squared test
 
 # Step 1: Read the data
 Data_1_Severity <- read_excel("DATA/Data (1).xlsx", sheet = "P. infestans")
 
 # Step 2: Clean and reshape the data
 colnames(Data_1_Severity) <- c("Treatment", "Block", "Week1", "Week3", "Week5", "Week7", "Week9")
-data1 <- Data_1_Severity[-1, ]
+data1 <- Data_1_Severity[-1, ]  # Remove first row if it is header
+data1 <- data1 %>% mutate(across(everything(), as.character))  # Convert all columns to character
+
+# Check column names and structure
+print(colnames(data1))
+
+# Convert relevant columns to numeric
+data1 <- data1 %>%
+  mutate(across(c(Week1, Week3, Week5, Week7, Week9), as.numeric))
+
+# Reshape the data to long format
 data_long <- data1 %>%
   pivot_longer(cols = c(Week1, Week3, Week5, Week7, Week9),
                names_to = "Weeks",
                values_to = "Severity") %>%
-  select(where(~ all(!is.na(.))))
+  filter(!is.na(Severity))  # Remove rows with NA severity
 
 # Step 3: Fit the mixed-effects model
 model <- lmer(Severity ~ Weeks * Treatment + (1 | Block), data = data_long)
@@ -110,5 +135,32 @@ ggplot(emm_df, aes(x = Weeks, y = emmean, color = Treatment)) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
+# Step 9: Prepare data for MANOVA
+data_wide <- data1 %>%
+  select(Treatment, Week1, Week3, Week5, Week7, Week9)
+
+# Check the structure of data_wide
+print(head(data_wide))
+
+# Ensure numeric type for MANOVA
+data_wide <- data_wide %>%
+  mutate(across(Week1:Week9, as.numeric))
+
+# Step 10: Perform MANOVA
+manova_results <- manova(cbind(Week1, Week3, Week5, Week7, Week9) ~ Treatment, data = data_wide)
+summary(manova_results)
+
+# Step 11: Conduct Hotelling's T-squared Test
+# Ensure there are at least two treatments
+if (length(unique(data_wide$Treatment)) >= 2) {
+  treatment_groups <- split(data_wide[, -1], data_wide$Treatment)
+  
+  # Perform Hotelling's T-squared test
+  hotelling_results <- Hotelling::hotelling.test(treatment_groups[[1]], treatment_groups[[2]])
+  print(hotelling_results)
+} else {
+  cat("Not enough treatment groups for Hotelling's T-squared test.\n")
+}
+
 # Optional: Print pairwise comparison results for clarity
-print(pairwise_results)
+print(pairwise_results)  
