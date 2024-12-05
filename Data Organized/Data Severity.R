@@ -14,3 +14,4 @@ data_long <- data1 %>%
                values_to = "Severity") %>%
   select(where(~ all(!is.na(.))))
 View(data_long)
+
