@@ -41,13 +41,14 @@ dfjustfruit <- df_fruits[,-c(3:8)]
 
 dfjustfruit <- dfjustfruit %>% group_by(Treatment, Repetition, Clusters) %>% slice(1) %>% ungroup()
 dfjustyield <- dfjustyield %>% group_by(Treatment, Repetition, Clusters) %>% slice(1) %>% ungroup()
-df_long <- left_join(dfjustfruit, dfjustyield, by = c("Treatment", "Repetition", "Clusters"))
+Dfyield_number <- left_join(dfjustfruit, dfjustyield, by = c("Treatment", "Repetition", "Clusters"))
 
 
 Bloc <- rep(1:5, each = 18)
-df_long$Blocks <- Bloc
+Dfyield_number$Blocks <- Bloc
 
 
-df_long <- df_long %>%
+Dfyield_number <- Dfyield_number %>%
   select(1:2, 6, 3:5, everything())
-View(df_long)
+View(Dfyield_number)
+save(df, file = "Dfyield_number.RData")
