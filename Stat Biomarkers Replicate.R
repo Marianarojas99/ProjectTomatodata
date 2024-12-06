@@ -1,260 +1,348 @@
 Databiomarkers <- read.csv("biomarkers.csv")
 View(Databiomarkers)
 
-results_tableH2020 <- data.frame(
-  Day = integer(),
-  ANOVA_F = numeric(),
-  ANOVA_p = numeric(),
-  Shapiro_Wilk_W = numeric(),
-  Shapiro_Wilk_p = numeric(),
+Days <- c(45, 60, 75, 90, 105)
+
+results_table_H202 <- data.frame(
+  Day = numeric(),
+  Test = character(),
   Transformation = character(),
-  NonParametric_p = numeric(),
+  PostHoc_Method = character(),
   stringsAsFactors = FALSE
 )
 
-Days <- c(45, 60, 75, 90, 105)
+
+if (!require("multcompView")) install.packages("multcompView")
+if (!require("dplyr")) install.packages("dplyr")
+if (!require("PMCMRplus")) install.packages("PMCMRplus")
+
+posthoc_letters_list <- list()  
 
 for (dia in Days) {
+  
+ 
   df_filtered <- Databiomarkers[Databiomarkers$Day == dia, ]
   
-  anova_result <- aov(H202 ~ Block, data = df_filtered)
+  
+  df_filtered$H202[is.na(df_filtered$H202)] <- 0
+  
+  
+  df_filtered$Block <- as.factor(df_filtered$Block)
+  df_filtered$Treatment <- as.factor(df_filtered$Treatment)
+  
+ 
+  anova_result <- aov(H202 ~ Treatment, data = df_filtered)
   residuos <- residuals(anova_result)
   shapiro_test_result <- shapiro.test(residuos)
   
   if (shapiro_test_result$p.value < 0.05) {
-    df_filtered$H202_sqrt <- sqrt(df_filtered$H202)
-    anova_result_sqrt <- aov(H202_sqrt ~ Block, data = df_filtered)
+    
+    df_filtered$h202_sqrt <- sqrt(df_filtered$H202)
+    anova_result_sqrt <- aov(h202_sqrt ~ Treatment, data = df_filtered)
     residuos_sqrt <- residuals(anova_result_sqrt)
     shapiro_test_sqrt <- shapiro.test(residuos_sqrt)
     
     if (shapiro_test_sqrt$p.value < 0.05) {
-      df_filtered$H202_log <- log(df_filtered$H202 + 1)  # Evitar log(0)
-      anova_result_log <- aov(H202_log ~ Block, data = df_filtered)
+      
+      df_filtered$h202_log <- log(df_filtered$H202 + 1)  
+      anova_result_log <- aov(h202_log ~ Treatment, data = df_filtered)
       residuos_log <- residuals(anova_result_log)
       shapiro_test_log <- shapiro.test(residuos_log)
       
       if (shapiro_test_log$p.value < 0.05) {
-        friedman_result <- friedman.test(H202 ~ Block | Treatment, data = df_filtered)
-        results_table <- rbind(results_table, data.frame(
+        
+        friedman_result <- friedman.test(H202 ~ Treatment | Block, data = df_filtered)
+        
+        
+        posthoc <- pairwise.wilcox.test(
+          df_filtered$H202,
+          df_filtered$Treatment,
+          p.adjust.method = "bonferroni"
+        )
+        
+     
+        letters <- multcompLetters(posthoc$p.value)$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+        
+        
+        results_table_H202 <- rbind(results_table_H202, data.frame(
           Day = dia,
-          ANOVA_F = NA,
-          ANOVA_p = NA,
-          Shapiro_Wilk_W = NA,
-          Shapiro_Wilk_p = NA,
+          Test = "Friedman",
           Transformation = "Non-Parametric",
-          NonParametric_p = friedman_result$p.value
+          PostHoc_Method = "Bonferroni"
         ))
       } else {
-        anova_summary_log <- summary(anova_result_log)
-        results_table <- rbind(results_table, data.frame(
+        
+        posthoc <- TukeyHSD(anova_result_log, "Treatment")
+        letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+        
+        results_table_H202 <- rbind(results_table_H202, data.frame(
           Day = dia,
-          ANOVA_F = anova_summary_log[[1]]["Block", "F value"],
-          ANOVA_p = anova_summary_log[[1]]["Block", "Pr(>F)"],
-          Shapiro_Wilk_W = shapiro_test_log$statistic,
-          Shapiro_Wilk_p = shapiro_test_log$p.value,
+          Test = "ANOVA",
           Transformation = "Log",
-          NonParametric_p = NA
+          PostHoc_Method = "Tukey"
         ))
       }
     } else {
-      anova_summary_sqrt <- summary(anova_result_sqrt)
-      results_table <- rbind(results_table, data.frame(
+     
+      posthoc <- TukeyHSD(anova_result_sqrt, "Treatment")
+      letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+      posthoc_letters_list[[as.character(dia)]] <- letters
+      
+      results_table_H202 <- rbind(results_table_H202, data.frame(
         Day = dia,
-        ANOVA_F = anova_summary_sqrt[[1]]["Block", "F value"],
-        ANOVA_p = anova_summary_sqrt[[1]]["Block", "Pr(>F)"],
-        Shapiro_Wilk_W = shapiro_test_sqrt$statistic,
-        Shapiro_Wilk_p = shapiro_test_sqrt$p.value,
+        Test = "ANOVA",
         Transformation = "Square Root",
-        NonParametric_p = NA
+        PostHoc_Method = "Tukey"
       ))
     }
   } else {
-    anova_summary <- summary(anova_result)
-    results_table <- rbind(results_table, data.frame(
+   
+    posthoc <- TukeyHSD(anova_result, "Treatment")
+    letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+    posthoc_letters_list[[as.character(dia)]] <- letters
+    
+    results_table_H202 <- rbind(results_table_H202, data.frame(
       Day = dia,
-      ANOVA_F = anova_summary[[1]]["Block", "F value"],
-      ANOVA_p = anova_summary[[1]]["Block", "Pr(>F)"],
-      Shapiro_Wilk_W = shapiro_test_result$statistic,
-      Shapiro_Wilk_p = shapiro_test_result$p.value,
+      Test = "ANOVA",
       Transformation = "None",
-      NonParametric_p = NA
+      PostHoc_Method = "Tukey"
     ))
   }
 }
 
-print(results_tableH2020)
+
+print(results_table_H202)
+
+
+for (dia in Days) {
+  cat("Día:", dia, "\n")
+  print(posthoc_letters_list[[as.character(dia)]])
+  cat("\n")
+}
+
 
 ##MDA
 
-Databiomarkers$MDA[is.na(Databiomarkers$MDA)] <- 0
 
-results_table_mda <- data.frame(
-  Day = integer(),
-  ANOVA_F = numeric(),
-  ANOVA_p = numeric(),
-  Shapiro_Wilk_W = numeric(),
-  Shapiro_Wilk_p = numeric(),
+results_table_MDA <- data.frame(
+  Day = numeric(),
+  Test = character(),
   Transformation = character(),
-  NonParametric_p = numeric(),
+  PostHoc_Method = character(),
   stringsAsFactors = FALSE
 )
+
+
+posthoc_letters_list <- list()  
 
 for (dia in Days) {
   
   df_filtered <- Databiomarkers[Databiomarkers$Day == dia, ]
   
-  anova_result <- aov(MDA ~ Block, data = df_filtered)
+  
+  df_filtered$MDA[is.na(df_filtered$MDA)] <- 0
+  
+  
+  df_filtered$Block <- as.factor(df_filtered$Block)
+  df_filtered$Treatment <- as.factor(df_filtered$Treatment)
+  
+
+  anova_result <- aov(MDA ~ Treatment, data = df_filtered)
+  residuos <- residuals(anova_result)
+  shapiro_test_result <- shapiro.test(residuos)
+  
+  if (shapiro_test_result$p.value < 0.05) {
+    
+    df_filtered$mda_sqrt <- sqrt(df_filtered$MDA)
+    anova_result_sqrt <- aov(mda_sqrt ~ Treatment, data = df_filtered)
+    residuos_sqrt <- residuals(anova_result_sqrt)
+    shapiro_test_sqrt <- shapiro.test(residuos_sqrt)
+    
+    if (shapiro_test_sqrt$p.value < 0.05) {
+     
+      df_filtered$mda_log <- log(df_filtered$MDA + 1)  
+      anova_result_log <- aov(mda_log ~ Treatment, data = df_filtered)
+      residuos_log <- residuals(anova_result_log)
+      shapiro_test_log <- shapiro.test(residuos_log)
+      
+      if (shapiro_test_log$p.value < 0.05) {
+     
+        friedman_result <- friedman.test(MDA ~ Treatment | Block, data = df_filtered)
+        
+     
+        posthoc <- pairwise.wilcox.test(
+          df_filtered$MDA,
+          df_filtered$Treatment,
+          p.adjust.method = "bonferroni"
+        )
+        
+      
+        letters <- multcompLetters(posthoc$p.value)$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+        
+       
+        results_table_MDA <- rbind(results_table_MDA, data.frame(
+          Day = dia,
+          Test = "Friedman",
+          Transformation = "Non-Parametric",
+          PostHoc_Method = "Bonferroni"
+        ))
+      } else {
+        
+        posthoc <- TukeyHSD(anova_result_log, "Treatment")
+        letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+        
+        results_table_MDA <- rbind(results_table_MDA, data.frame(
+          Day = dia,
+          Test = "ANOVA",
+          Transformation = "Log",
+          PostHoc_Method = "Tukey"
+        ))
+      }
+    } else {
+      
+      posthoc <- TukeyHSD(anova_result_sqrt, "Treatment")
+      letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+      posthoc_letters_list[[as.character(dia)]] <- letters
+      
+      results_table_MDA <- rbind(results_table_MDA, data.frame(
+        Day = dia,
+        Test = "ANOVA",
+        Transformation = "Square Root",
+        PostHoc_Method = "Tukey"
+      ))
+    }
+  } else {
+    
+    posthoc <- TukeyHSD(anova_result, "Treatment")
+    letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+    posthoc_letters_list[[as.character(dia)]] <- letters
+    
+    results_table_MDA <- rbind(results_table_MDA, data.frame(
+      Day = dia,
+      Test = "ANOVA",
+      Transformation = "None",
+      PostHoc_Method = "Tukey"
+    ))
+  }
+}
+
+
+print(results_table_MDA)
+
+
+for (dia in Days) {
+  cat("Día:", dia, "\n")
+  print(posthoc_letters_list[[as.character(dia)]])
+  cat("\n")
+}
+
+
+##Superoxide anion
+  
+results_table_superoxide <- data.frame(
+  Day = numeric(),
+  Test = character(),
+  Transformation = character(),
+  PostHoc_Method = character(),
+  stringsAsFactors = FALSE
+)
+
+posthoc_letters_list <- list()  
+
+for (dia in Days) {
+  
+  
+  df_filtered <- Databiomarkers[Databiomarkers$Day == dia, ]
+  
+ 
+  df_filtered$Superoxide.anion[is.na(df_filtered$Superoxide.anion)] <- 0
+  
+  
+  df_filtered$Block <- as.factor(df_filtered$Block)
+  df_filtered$Treatment <- as.factor(df_filtered$Treatment)
+  
+  
+  anova_result <- aov(Superoxide.anion ~ Treatment, data = df_filtered)
   residuos <- residuals(anova_result)
   shapiro_test_result <- shapiro.test(residuos)
   
   if (shapiro_test_result$p.value < 0.05) {
    
-    df_filtered$MDA_sqrt <- sqrt(df_filtered$MDA)
-    anova_result_sqrt <- aov(MDA_sqrt ~ Block, data = df_filtered)
-    residuos_sqrt <- residuals(anova_result_sqrt)
-    shapiro_test_sqrt <- shapiro.test(residuos_sqrt)
-    
-    if (shapiro_test_sqrt$p.value < 0.05) {
-      df_filtered$MDA_log <- log(df_filtered$MDA + 1)  
-      anova_result_log <- aov(MDA_log ~ Block, data = df_filtered)
-      residuos_log <- residuals(anova_result_log)
-      shapiro_test_log <- shapiro.test(residuos_log)
-      
-      if (shapiro_test_log$p.value < 0.05) {
-        friedman_result <- friedman.test(MDA ~ Block | Treatment, data = df_filtered)
-        results_table_mda <- rbind(results_table_mda, data.frame(
-          Day = dia,
-          ANOVA_F = NA,
-          ANOVA_p = NA,
-          Shapiro_Wilk_W = NA,
-          Shapiro_Wilk_p = NA,
-          Transformation = "Non-Parametric",
-          NonParametric_p = friedman_result$p.value
-        ))
-      } else {
-        anova_summary_log <- summary(anova_result_log)
-        results_table_mda <- rbind(results_table_mda, data.frame(
-          Day = dia,
-          ANOVA_F = anova_summary_log[[1]]["Block", "F value"],
-          ANOVA_p = anova_summary_log[[1]]["Block", "Pr(>F)"],
-          Shapiro_Wilk_W = shapiro_test_log$statistic,
-          Shapiro_Wilk_p = shapiro_test_log$p.value,
-          Transformation = "Log",
-          NonParametric_p = NA
-        ))
-      }
-    } else {
-      anova_summary_sqrt <- summary(anova_result_sqrt)
-      results_table_mda <- rbind(results_table_mda, data.frame(
-        Day = dia,
-        ANOVA_F = anova_summary_sqrt[[1]]["Block", "F value"],
-        ANOVA_p = anova_summary_sqrt[[1]]["Block", "Pr(>F)"],
-        Shapiro_Wilk_W = shapiro_test_sqrt$statistic,
-        Shapiro_Wilk_p = shapiro_test_sqrt$p.value,
-        Transformation = "Square Root",
-        NonParametric_p = NA
-      ))
-    }
-  } else {
-    anova_summary <- summary(anova_result)
-    results_table_mda <- rbind(results_table_mda, data.frame(
-      Day = dia,
-      ANOVA_F = anova_summary[[1]]["Block", "F value"],
-      ANOVA_p = anova_summary[[1]]["Block", "Pr(>F)"],
-      Shapiro_Wilk_W = shapiro_test_result$statistic,
-      Shapiro_Wilk_p = shapiro_test_result$p.value,
-      Transformation = "None",
-      NonParametric_p = NA
-    ))
-  }
-}
-
-print(results_table_mda)
-
-##Superoxide anion
-
-
-results_table_superoxide <- data.frame(
-  Day = integer(),
-  ANOVA_F = numeric(),
-  ANOVA_p = numeric(),
-  Shapiro_Wilk_W = numeric(),
-  Shapiro_Wilk_p = numeric(),
-  Transformation = character(),
-  NonParametric_p = numeric(),
-  stringsAsFactors = FALSE
-)
-
-
-for (dia in Days) {
-  
-  df_filtered <- Databiomarkers[Databiomarkers$Day == dia, ]
-  
-  anova_result <- aov(Superoxide.anion ~ Block, data = df_filtered)
-  residuos <- residuals(anova_result)
-  shapiro_test_result <- shapiro.test(residuos)
-  
-  if (shapiro_test_result$p.value < 0.05) {
-    
     df_filtered$superoxide_sqrt <- sqrt(df_filtered$Superoxide.anion)
-    anova_result_sqrt <- aov(superoxide_sqrt ~ Block, data = df_filtered)
+    anova_result_sqrt <- aov(superoxide_sqrt ~ Treatment, data = df_filtered)
     residuos_sqrt <- residuals(anova_result_sqrt)
     shapiro_test_sqrt <- shapiro.test(residuos_sqrt)
     
     if (shapiro_test_sqrt$p.value < 0.05) {
       
       df_filtered$superoxide_log <- log(df_filtered$Superoxide.anion + 1)  # Evitar log(0)
-      anova_result_log <- aov(superoxide_log ~ Block, data = df_filtered)
+      anova_result_log <- aov(superoxide_log ~ Treatment, data = df_filtered)
       residuos_log <- residuals(anova_result_log)
       shapiro_test_log <- shapiro.test(residuos_log)
       
       if (shapiro_test_log$p.value < 0.05) {
+       
+        friedman_result <- friedman.test(Superoxide.anion ~ Treatment | Block, data = df_filtered)
         
-        friedman_result <- friedman.test(Superoxide.anion ~ Block | Treatment, data = df_filtered)
+        
+        posthoc <- pairwise.wilcox.test(
+          df_filtered$Superoxide.anion,
+          df_filtered$Treatment,
+          p.adjust.method = "bonferroni"
+        )
+        
+      
+        letters <- multcompLetters(posthoc$p.value)$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+        
+       
         results_table_superoxide <- rbind(results_table_superoxide, data.frame(
           Day = dia,
-          ANOVA_F = NA,
-          ANOVA_p = NA,
-          Shapiro_Wilk_W = NA,
-          Shapiro_Wilk_p = NA,
+          Test = "Friedman",
           Transformation = "Non-Parametric",
-          NonParametric_p = friedman_result$p.value
+          PostHoc_Method = "Bonferroni"
         ))
       } else {
-        anova_summary_log <- summary(anova_result_log)
+        
+        posthoc <- TukeyHSD(anova_result_log, "Treatment")
+        letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+        
         results_table_superoxide <- rbind(results_table_superoxide, data.frame(
           Day = dia,
-          ANOVA_F = anova_summary_log[[1]]["Block", "F value"],
-          ANOVA_p = anova_summary_log[[1]]["Block", "Pr(>F)"],
-          Shapiro_Wilk_W = shapiro_test_log$statistic,
-          Shapiro_Wilk_p = shapiro_test_log$p.value,
+          Test = "ANOVA",
           Transformation = "Log",
-          NonParametric_p = NA
+          PostHoc_Method = "Tukey"
         ))
       }
     } else {
       
-      anova_summary_sqrt <- summary(anova_result_sqrt)
+      posthoc <- TukeyHSD(anova_result_sqrt, "Treatment")
+      letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+      posthoc_letters_list[[as.character(dia)]] <- letters
+      
       results_table_superoxide <- rbind(results_table_superoxide, data.frame(
         Day = dia,
-        ANOVA_F = anova_summary_sqrt[[1]]["Block", "F value"],
-        ANOVA_p = anova_summary_sqrt[[1]]["Block", "Pr(>F)"],
-        Shapiro_Wilk_W = shapiro_test_sqrt$statistic,
-        Shapiro_Wilk_p = shapiro_test_sqrt$p.value,
+        Test = "ANOVA",
         Transformation = "Square Root",
-        NonParametric_p = NA
+        PostHoc_Method = "Tukey"
       ))
     }
   } else {
-    anova_summary <- summary(anova_result)
+    
+    posthoc <- TukeyHSD(anova_result, "Treatment")
+    letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+    posthoc_letters_list[[as.character(dia)]] <- letters
+    
     results_table_superoxide <- rbind(results_table_superoxide, data.frame(
       Day = dia,
-      ANOVA_F = anova_summary[[1]]["Block", "F value"],
-      ANOVA_p = anova_summary[[1]]["Block", "Pr(>F)"],
-      Shapiro_Wilk_W = shapiro_test_result$statistic,
-      Shapiro_Wilk_p = shapiro_test_result$p.value,
+      Test = "ANOVA",
       Transformation = "None",
-      NonParametric_p = NA
+      PostHoc_Method = "Tukey"
     ))
   }
 }
@@ -262,11 +350,10 @@ for (dia in Days) {
 
 print(results_table_superoxide)
 
-library(multcompView)
-library(ggplot2)
-library(dplyr)
-##Falta sacarle las letras
-## hacer las medidas repetidas para los tres casos 
 
-#componentes principales (en clase)
+for (dia in Days) {
+  cat("Día:", dia, "\n")
+  print(posthoc_letters_list[[as.character(dia)]])
+  cat("\n")
+}
 
