@@ -1,0 +1,374 @@
+---
+# author:
+# - affiliation: 
+#   email: 
+#   name: Alfonso Garmendia
+title: "Data format and survey"
+subtitle: "Impact of *Argemone mexicana* L. on tomato plants infected with *Phytophthora infestans*"
+title-block-banner: true
+date: last-modified
+date-format: iso
+lang: en-US
+code-fold: true
+toc: true
+toc-location: body
+toc-depth: 6
+format:
+  html:
+    embed-resources: true
+    self-contained-math: true
+---
+
+```{r include=FALSE}
+library(readxl)
+library(knitr)
+library(dplyr)
+library(tidyr)
+library(writexl)
+
+```
+
+# Original data
+
+```{r download}
+### Raw data ---------------------------
+data0 <- "data/0_tomato-raw.xlsx"
+
+### Download data if not done ----------
+if (!file.exists(data0)) 
+  source("data-download.R")
+
+```
+
+Original data were downloaded using "*00_data-download.R*" script into "*`r data0`*".
+
+```{r}
+s0 <- excel_sheets(data0)
+```
+
+The file `r data0` has `r length(s0)` sheets: `r s0`.
+
+## *Phytophthora infestans*
+
+```{r}
+#| warning: false
+pin0 <- read_excel(data0, s0[1])
+```
+
+```{r}
+### Variables names --------------------
+# names(pin0)
+names0 <- c("Treatment", "Block",
+  "pi_w1", "pi_w3", "pi_w5",
+  "pi_w7", "pi_w9" )
+names(pin0) <- names0
+
+### Remove first row -------------------
+pin0 <- pin0[-1, ]
+
+```
+
+Variables names are in two rows, therefore:
+
+-   Variables names had to be renamed.
+-   First row had to be removed, because is part of the variable names.
+
+The dataframe for the amount of *Phytophthora infestans* (**pin0**) at different weeks is in wide format and has `r length(pin0[[1]])` observations from `r length(pin0)` variables (@tbl-pin0): *`r names(pin0)`*.
+
+```{r tbl-pin0}
+#| tbl-cap: Raw data for *Phytophthora infestans*. 
+kable(pin0)
+```
+
+## Agronomic features
+
+```{r}
+# s0
+fyi0 <- read_excel(data0, s0[2], 
+  range = "A2:I77")
+fnu0 <- read_excel(data0, s0[2], 
+  range = "K2:S77")
+fwe0 <- read_excel(data0, s0[2], 
+  range = "U2:X77")
+psi0 <- read_excel(data0, s0[2], 
+  range = "Z1:AD26")
+
+```
+
+In the sheet for Agronomic features (\*`r s0[2]`) there are four different data tables:
+
+-   *Fruit yield* (**fyi0**) in wide format for different clusters, has `r length(fyi0[[1]])` observations from `r length(fyi0)` variables (@tbl-fyi0): *`r names(fyi0)`*.
+
+-   *Number of fruits* (**fnu0**) in wide format for different clusters, has `r length(fnu0[[1]])` observations from `r length(fnu0)` variables (@tbl-fnu0): *`r names(fnu0)`*.
+
+-   *Average fruits weight* (**fwe0**) has `r length(fwe0[[1]])` observations from `r length(fwe0)` variables (@tbl-fwe0): *`r names(fwe0)`*.
+
+-   *Plant size* (**psi0**) has `r length(psi0[[1]])` observations from `r length(psi0)` variables (@tbl-psi0): *`r names(psi0)`*.
+
+```{r tbl-fyi0}
+#| tbl-cap: Raw data for *Fruit yield*. 
+kable(fyi0)
+```
+
+```{r tbl-fnu0}
+#| tbl-cap: Raw data for *Number of fruits*. 
+kable(fnu0)
+```
+
+```{r tbl-fwe0}
+#| tbl-cap: Raw data for *Average fruit weight*. 
+kable(fwe0)
+```
+
+```{r tbl-psi0}
+#| tbl-cap: Raw data for *Plant size*. 
+kable(psi0)
+```
+
+## Biomarkers
+
+```{r}
+bio0 <- read_excel(data0, s0[3])
+```
+
+The table for *Biomarkers* (**bio0**) is in long format for different number of days and has `r length(bio0[[1]])` observations from `r length(bio0)` variables (@tbl-bio0): *`r names(bio0)`*.
+
+```{r tbl-bio0}
+#| tbl-cap: Raw data for *Biomarkers*. 
+kable(bio0)
+```
+
+## Non-enzimatic
+
+```{r}
+nen0 <- read_excel(data0, s0[4])
+```
+
+The table for *non enzimatic* (**nen0**) is in long format for different number of days and has `r length(nen0[[1]])` observations from `r length(nen0)` variables (@tbl-nen0): *`r names(nen0)`*.
+
+```{r tbl-nen0}
+#| tbl-cap: Raw data for *non enzimatic*. 
+kable(nen0)
+```
+
+# Understanding the data format
+
+```{r}
+tr <- unique(psi0$Treatment)
+# unique(pin0$Treatment)
+# unique(fnu0$Treatment)
+# unique(fwe0$Treatment)
+# unique(fyi0$Treatment)
+# unique(bio0$Treatment)
+# unique(nen0$Treatment)
+
+```
+
+All data tables have the same `r length(tr)` treatments, but sometimes in different order: *`r tr`*.
+
+```{r}
+bl <- unique(psi0$Block)
+# unique(pin0$Block)
+# unique(fnu0$Block)
+# unique(fwe0$Block)
+# unique(fyi0$Block)
+# unique(bio0$Block)
+# unique(nen0$Block)
+
+```
+
+All data tables should have `r length(bl)` blocks (*`r tr`*), but the three fruits tables don't. This will have to be corrected latter.
+
+Therefore, the main structure of data are of 25 observations (plants): 5 blocks x 5 treatments. This structure is the one in *psi0* and *pin0*, but in this last one the measurements are done in 5 different weeks.
+
+The fruits three tables have this same structure times 3 repetitions.
+
+And the markers tables (bio0 and nen0) have this same structure repeated in 5 different times (Day).
+
+# Join tables
+
+I decided to join all fruits and markers tables. There can (and should) be done further combinations for each analysis, but this would be a start. 
+
+For fruits there will be two tables: 
+- Table *fruits* with the total values. 
+- Table *cluster* with the individual cluster values in long format. 
+
+*Plants* and *Phytophthora* tables are better separate, while *Phytophthora* should be converted to long format.
+
+## Fruits
+
+### Add missing variables
+
+```{r}
+b <- numeric()
+for (i in 1:5) {
+    b <- c(b, rep(i, 3))
+}
+fnu0$Block <- rep(b, 5)
+fyi0$Block <- rep(b, 5)
+fwe0$Block <- rep(b, 5)
+fwe0$Repetition <- fnu0$Repetition
+```
+
+Variables *Block* and *Repetition* were added to the three fruits tables.
+
+### Fruits table
+
+```{r}
+# names(fyi0)
+n0 <- c("Treatment", "Repetition",
+  "Block", "Total")
+n1 <- c("Treatment", "Repetition",
+  "Block", "tfyield")
+fyi1 <- fyi0[n0]
+names(fyi1) <- n1
+
+n1 <- c("Treatment", "Repetition",
+  "Block", "tfnumber")
+fnu1 <- fnu0[n0]
+names(fnu1) <- n1
+
+# names(fwe0)
+n0 <- c("Treatment", "Repetition",
+  "Block", "average weight of fruits")
+n1 <- c("Treatment", "Repetition",
+  "Block", "fweight")
+fwe1 <- fwe0[n0]
+names(fwe1) <- n1
+```
+
+For each fruit table the Total variable was selected and renamed with a meaningful name:
+
+-   "*tfyield*", for Total fruits yield.
+-   "*tfnumber*", for Total fruits number.\
+-   "*fweight*", for the average fruits weight.
+
+```{r}
+# library(dplyr)
+fruits <- left_join(fyi1, fnu1,
+  by = join_by(Treatment, Block, 
+    Repetition))
+fruits <- left_join(fruits, fwe1,
+  by = join_by(Treatment, Block, 
+    Repetition))
+```
+
+A new table *fruits* was created with the totals of fruits variables for each treatment, block and repetition. This table has `r length(fruits[[1]])` observations from `r length(fruits)` variables (@tbl-fruits): *`r names(fruits)`*.
+
+```{r tbl-fruits}
+#| tbl-cap: New fruits data with the total data from the three fruits tables. 
+kable(fruits)
+```
+
+### Long format clusters fruits table
+
+```{r}
+# library(tidyr)
+w <- which(names(fyi0) == "Total")
+fyi1 <- pivot_longer(fyi0[-w], 
+  cols = starts_with("cluster"),
+  names_to = "Cluster", 
+  names_prefix = "cluster ", 
+  values_to = "yield")
+
+w <- which(names(fnu0) == "Total")
+fnu1 <- pivot_longer(fnu0[-w], 
+  cols = starts_with("cluster"),
+  names_to = "Cluster", 
+  names_prefix = "cluster ", 
+  values_to = "fnumber")
+
+cluster <- left_join(fyi1, fnu1,
+  by = join_by(Treatment, Block, 
+    Repetition, Cluster))
+
+### Clean -------------------------
+rm("b", "bl", "data0", "fnu0", "fnu1",
+  "fwe0", "fwe1", "fyi0", "fyi1", "i",
+  "n0", "n1", "names0", "s0", "tr", 
+  "w" )
+```
+
+A new table *cluster* was created with the value of yield and fruits number for each cluster,  treatment, block and repetition. This table has `r length(cluster[[1]])` observations from `r length(cluster)` variables (@tbl-cluster): *`r names(cluster)`*.
+
+```{r tbl-cluster}
+#| tbl-cap: New cluster data with the yield and number of fruit for each cluster. Only first 20 observations showed. 
+kable(cluster[1:20, ])
+```
+
+## Markers
+
+```{r}
+markers <- left_join(bio0[-4], nen0[-4],
+  by = join_by(Day, Treatment, Block))
+```
+
+A new table *markers* was created with all the biomarkers and non-enzimatic ones for each day,  treatment and block. This table has `r length(markers[[1]])` observations from `r length(markers)` variables (@tbl-markers): *`r names(markers)`*.
+
+```{r tbl-markers}
+#| tbl-cap: New markers data with the biomarkers and non-enzimatic ones. Only first 20 observations showed. 
+kable(markers[1:20, ])
+
+rm(bio0, nen0)
+```
+
+## *Phytophthora*
+
+```{r}
+phytopthora <- pivot_longer(pin0, 
+  cols = starts_with("pi_w"),
+  names_to = "week", 
+  names_prefix = "pi_w", 
+  values_to = "Phytopthora")
+
+phytopthora$week <- 
+  as.numeric(phytopthora$week)
+
+rm(pin0)
+```
+
+A new table *phytopthora* was created with the *Phytopthora* data in each week, treatment and block. This table has `r length(phytopthora[[1]])` observations from `r length(phytopthora)` variables (@tbl-phytopthora): *`r names(phytopthora)`*.
+
+```{r tbl-phytopthora}
+#| tbl-cap: New *phytopthora* data for each week in long format. Only first 20 observations showed. 
+kable(phytopthora[1:20, ])
+```
+
+See in the Article if the weeks correspond to the days in markers table and could then be joined together. 
+
+## Plants
+
+```{r}
+plants <- psi0
+rm(psi0)
+```
+
+The table for plant size is kept as it was. 
+
+# Export data
+
+```{r}
+# if (!dir.exists("data")) dir.create("data")
+save(fruits, cluster, markers, 
+  phytopthora, plants, 
+  file = "data/tomato-clean.Rdata")
+
+write_xlsx(list(
+  fruits = fruits, 
+  cluster = cluster, 
+  markers = markers, 
+  phytopthora = phytopthora, 
+  plants = plants), 
+  path = "data/tomato-clean.xlsx")
+
+```
+
+Clean data were exported in two formats inside the "*data/*" folder: 
+
+-   Excel, to check the data visually. 
+-   Rdata, to import the data in analysis documents. 
+
+To import the data in further analysis, only the next code is needed: 
+
+`load("data/tomato-clean.Rdata")`
+

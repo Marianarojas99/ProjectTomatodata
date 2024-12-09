@@ -61,3 +61,11 @@ The data of the article is divided in four different categories: Severity of dis
 ## Files description
 
 ## Protocol
+
+1. To download and arrange the data, render the file *01_data-format.qmd*.
+
+```
+quarto::quarto_render("01_data-format.qmd")
+```
+
+2. 
