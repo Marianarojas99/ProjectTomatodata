@@ -32,7 +32,11 @@ library(writexl)
 
 ```{r download}
 ### Raw data ---------------------------
+<<<<<<< HEAD
 data0 <- "data/Data (1).xlsx"
+=======
+data0 <- "DATA/Data (1).xlsx"
+>>>>>>> a58f9fe1eaf0adfa8eb521d343c4714ca13e5650
 
 ### Download data if not done ----------
 if (!file.exists(data0)) 
@@ -43,7 +47,7 @@ if (!file.exists(data0))
 Original data were downloaded using "*00_data-download.R*" script into "*`r data0`*".
 
 ```{r}
-s0 <- excel_sheets(data0)
+s0 <- readxl::excel_sheets(data0)
 ```
 
 The file `r data0` has `r length(s0)` sheets: `r s0`.
@@ -92,6 +96,8 @@ fwe0 <- read_excel(data0, s0[2],
   range = "U2:X77")
 psi0 <- read_excel(data0, s0[2], 
   range = "Z1:AD26")
+write.csv(psi0, "Plantsize.csv", row.names = FALSE) 
+#
 
 ```
 
@@ -332,6 +338,7 @@ A new table *phytopthora* was created with the *Phytopthora* data in each week, 
 ```{r tbl-phytopthora}
 #| tbl-cap: New *phytopthora* data for each week in long format. Only first 20 observations showed. 
 kable(phytopthora[1:20, ])
+write.csv(phytopthora,"Phytophtora.csv", row.names = FALSE)
 ```
 
 See in the Article if the weeks correspond to the days in markers table and could then be joined together. 
