@@ -32,7 +32,11 @@ library(writexl)
 
 ```{r download}
 ### Raw data ---------------------------
+<<<<<<< HEAD
+data0 <- "data/Data (1).xlsx"
+=======
 data0 <- "DATA/Data (1).xlsx"
+>>>>>>> a58f9fe1eaf0adfa8eb521d343c4714ca13e5650
 
 ### Download data if not done ----------
 if (!file.exists(data0)) 
