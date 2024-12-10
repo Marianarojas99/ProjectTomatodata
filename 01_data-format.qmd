@@ -92,7 +92,8 @@ fwe0 <- read_excel(data0, s0[2],
   range = "U2:X77")
 psi0 <- read_excel(data0, s0[2], 
   range = "Z1:AD26")
-write.csv(psi0, "Plantsize.csv", row.names = FALSE)
+write.csv(psi0, "Plantsize.csv", row.names = FALSE) 
+#
 
 ```
 
