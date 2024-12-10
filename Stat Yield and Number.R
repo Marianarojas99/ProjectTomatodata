@@ -5,17 +5,24 @@ View(df)
 
 #Anova
 
-Yieldaov <- aov(Yield~Treatment + Block, data = df)
+Yieldaov <- aov(Yield~Treatment *Block, data = df)
+summary(Yieldaov)
+
+Yieldaov <- lm(Yield~Treatment + Number_of_Fruits , data = df)
 summary(Yieldaov)
 
 
 #Normality 
 resyield <- residuals(Yieldaov)
 shapiro.test(resyield)
+plot(resyield)
+which(resyield>1000)
+resyield2 <- resyield[-which(resyield>1000)]
 
 #QQplot 
 
-qqnorm(resyield)
+qqnorm(resyield2)
+shapiro.test(resyield2)
 qqline(res, col = "blue", lwd = 2)
 
 #Homocedasticity
