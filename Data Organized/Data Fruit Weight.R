@@ -32,3 +32,5 @@ Dfprov3 <- Dfprov3 %>%
 
 # View the updated dataset
 View(Dfprov3)
+save(df, file = "Dfweight.RData")
+
