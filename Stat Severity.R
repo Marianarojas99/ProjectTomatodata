@@ -1,15 +1,9 @@
-Dataseverity <- read.csv("Phytophtora.csv")
+source("Data Organized/Data Severity.R")
 
-
-data_long <- data1 %>%
-  pivot_longer(cols = c(Week1,Week3,Week5,Week7,Week9),
-               names_to = "Weeks",
-               values_to = "Severity") %>%
-  select(where(~ all(!is.na(.))))
-View(data_long)
-install.packages("lme4")
-install.packages("lmerTest")  # For p-values
-install.packages("ggplot2")  # For visualization
+#View(data_long)
+# install.packages("lme4")
+# install.packages("lmerTest")  # For p-values
+# install.packages("ggplot2")  # For visualization
 library(lme4)
 library(lmerTest)
 library(ggplot2)
@@ -26,7 +20,7 @@ anova(model)
 library(emmeans)  # For estimated marginal means
 
 # Installing 
-install.packages("pbkrtest")
+#install.packages("pbkrtest")
 library(pbkrtest)
 
 # Obtain estimated marginal means
@@ -42,6 +36,7 @@ mean_data <- data_long %>%
   group_by(Weeks, Treatment) %>%
   summarize(Mean_Severity = mean(Severity, na.rm = TRUE), .groups = 'drop')
 # Create a line graph
+library(ggplot2)
 ggplot(mean_data, aes(x = Weeks, y = Mean_Severity, color = Treatment, group = Treatment)) +
   geom_line(size = 1) +      # Line for each treatment
   geom_point(size = 3) +     # Points for each mean severity
@@ -54,8 +49,8 @@ ggplot(mean_data, aes(x = Weeks, y = Mean_Severity, color = Treatment, group = T
 
 
 # Load required packages and libraries for determine the differences between treatments in the severity of P. infestans, a repeated measures multivariate analysis of variance and Hotteling test (a = 0.05) 
-install.packages("car")       # For MANOVA
-install.packages("Hotelling") # For Hotelling's T-squared test
+# install.packages("car")       # For MANOVA
+# install.packages("Hotelling") # For Hotelling's T-squared test
 
 # Load required libraries
 library(readxl)
@@ -129,7 +124,7 @@ ggplot(emm_df, aes(x = Weeks, y = emmean, color = Treatment)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # Step 9: Prepare data for MANOVA
-data_wide <- data1 %>%
+data_wide <- data_long %>%
   select(Treatment, Week1, Week3, Week5, Week7, Week9)
 
 # Check the structure of data_wide
