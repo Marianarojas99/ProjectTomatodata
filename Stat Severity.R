@@ -1,11 +1,4 @@
-library(readxl)
-Data_1_Severity <- read_excel("DATA/Data (1).xlsx", 
-                              sheet = "P. infestans")
-View(Data_1_Severity)
-library(dplyr)
-library(tidyr)
-colnames(Data_1_Severity) <- c("Treatment","Block","Week1","Week3","Week5","Week7","Week9")
-data1 <- Data_1_Severity[-1, ]
+Dataseverity <- read.csv("Phytophtora.csv")
 
 
 data_long <- data1 %>%
