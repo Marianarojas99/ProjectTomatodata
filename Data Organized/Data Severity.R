@@ -13,5 +13,5 @@ data_long <- data1 %>%
                names_to = "Weeks",
                values_to = "Severity") %>%
   select(where(~ all(!is.na(.))))
-#View(data_long)
+View(data_long)
 

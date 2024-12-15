@@ -11,8 +11,8 @@ Explanation
 Call
 
 ```{r}
-Dataseverity<- read.csv("Phytophtora.csv")
-print(Dataseverity)
+source("Data Organized/Data Severity.R")
+print(data_long)
 ```
 
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
