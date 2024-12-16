@@ -4,8 +4,6 @@ format: html
 editor: visual
 ---
 
-## Yield
-
 The data is divided into five blocks, six cluster (refers to a group or cluster of tomatoes growing together on the same cluster or stem branch) and five treatments.
 
 **Required libraries**
@@ -39,6 +37,8 @@ In the "Total table" all clusters are summed up.
 ```{r}
 knitr::kable(dftotal, caption = "Data of yield and Number of fruits ")
 ```
+
+## Yield
 
 ### Statistical analysis
 
@@ -106,7 +106,7 @@ hist(resYieldtotal,
 
 Post hoc test tukey
 
-```{r}
+```{r, warning=FALSE}
 TukeyHSD(Yieldtotal, "Treatment")
 tukey_result <- TukeyHSD(Yieldtotal, "Treatment")
 tukey_pvalues <- tukey_result$Treatment[, "p adj"]
@@ -124,16 +124,117 @@ Infes + EXAm ("ac"): These plants are in an intermediate group ("ac"), showing r
 
 ```{r}
 ggplot(dftotal, aes(x = Treatment, y = tfyield)) +
-  geom_boxplot(aes(fill = Treatment), color = "black") +  # Boxplot con colores
+  geom_boxplot(aes(fill = Treatment), color = "black") +  
   geom_text(aes(x = Treatment, 
-                y = max(dftotal$tfyield) + 1,  # Ajusta según sea necesario
+                y = max(dftotal$tfyield) + 1,  
                 label = tukey_letters[as.character(Treatment)]), 
-            size = 5) +  # Agregar las letras de Tukey
-  labs(title = "Boxplot with Tukey Letters",
+            size = 2) +  
+  labs(title = "Effect of treatment on yield",
        x = "Treatment",
        y = "Yield") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-\*\*
+## Number of fruits
+
+### Statistical analysis
+
+**Anova**
+
+-   Taking into account clusters:
+
+    ```{r}
+    fruitnoaov <- aov(fnumber~Treatment*Block, data = df)
+    summary(fruitnoaov)
+    ```
+
+-   Total Number of fruits
+
+```{r}
+fruitnototal <- aov(tfnumber~Treatment*Block, data = dftotal)
+summary(fruitnototal)
+```
+
+**Interpretation**
+
+Treatment: In the clustered model, Treatment is significant but less strongly (p=0.0181) than in the non-clustered model (p=0.000149). Clustering accounts for intra-group correlations, which increases variability, reducing significance.
+
+Block is consistently non-significant in both models, suggesting that grouping observations into blocks does not contribute much to explaining variability.
+
+Treatment:Block interaction is not significant in either case, indicating treatment effects are consistent across blocks.
+
+**Test of statistical assumptions**
+
+**Normality**
+
+-   Taking into account clusters:
+
+    ```{r}
+    resfruitno <- residuals(fruitnoaov)
+    shapiro.test(resfruitno)
+    ```
+
+    p- value \<0.05 means that is no normal.
+
+-   Total number of fruits
+
+```{r}
+resfruitnotot <- residuals(fruitnototal)
+shapiro.test(resfruitnotot)
+```
+
+The data present a normal distribution.
+
+-   Since we are interested in knowing the effect of the treatments and not the effect of the clusters, we continue the analysis with the data that contemplates the total, the one that sum of the clusters.
+
+    Visualize the behavior of the data
+
+    ```{r}
+    qqnorm(resfruitnotot, main = "Q-Q Plot")
+    qqline(resfruitnotot, col = "red", lwd = 2) 
+    hist(resfruitnotot,
+         main = "Residuals",
+         xlab = "Residuals", 
+         col = "lightgreen", 
+         border = "black",
+         breaks = 20)
+    ```
+
+Homocedasticity
+
+```{r}
+bartlett.test(resfruitnotot~dftotal$Treatment)
+```
+
+There is no statistically significant evidence to suggest that the variances of the response variable differ across the treatment groups. The assumption of homogeneity of variances is satisfied
+
+Post hoc test tukey
+
+```{r, warning=FALSE}
+tukey_result1 <- TukeyHSD(fruitnototal, "Treatment")
+tukey_result1
+tukey_pvalues1 <- tukey_result1$Treatment[, "p adj"]
+tukey_letters1 <- multcompLetters(tukey_pvalues1)$Letters
+tukey_letters1
+```
+
+EXAm ("a"): These plants belong to group "a," indicating that their yield response is significantly better than infected untreated plants (Infes, "b") and different from the untreated healthy control.
+
+Infes + Captan ("bc"): These plants share a group with Infes ("b") and the Control ("c"), indicating that Captan provides moderate improvement, but not enough to restore their condition to the level of healthy plants treated with EXAm ("a").
+
+Infes + EXAm ("ac"): These plants are in an intermediate group ("ac"), showing results similar to EXAm-treated healthy plants ("a") and also overlapping with group "c" (e.g., Captan-treated or untreated controls).
+
+```{r}
+ggplot(dftotal, aes(x = Treatment, y = tfnumber)) +
+  geom_boxplot(aes(fill = Treatment), color = "black") +  
+  geom_text(aes(x = Treatment, 
+                y = max(dftotal$tfnumber) + 1,  
+                label = tukey_letters1[as.character(Treatment)]), 
+            size = 2) +  
+  labs(title = "Effect of treatment on number of fruits",
+       x = "Treatment",
+       y = "Number of fruits") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+```
