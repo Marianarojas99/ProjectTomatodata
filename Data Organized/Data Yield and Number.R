@@ -59,6 +59,5 @@ dfjustyield <- dfjustyield %>%
   select(1:2, 6, 3:5, everything())
 
 View(dfjustyield)
-#Covert it csv
-write.csv(dfjustyield,"Dfyield_number.csv", row.names = FALSE)
+
 
