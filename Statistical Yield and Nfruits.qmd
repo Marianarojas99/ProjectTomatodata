@@ -14,6 +14,7 @@ library(readxl)
 library(agricolae)
 library(multcompView)
 library(dplyr)
+library(FSA)
 ```
 
 Call the data
@@ -38,11 +39,11 @@ In the "Total table" all clusters are summed up.
 knitr::kable(dftotal, caption = "Data of yield and Number of fruits ")
 ```
 
-## Yield
+## Fruit Yield
 
 ### Statistical analysis
 
-**Anova**
+**Analysis of Variance (ANOVA)**
 
 -   Taking into account clusters:
 
@@ -140,7 +141,7 @@ ggplot(dftotal, aes(x = Treatment, y = tfyield)) +
 
 ### Statistical analysis
 
-**Anova**
+**Analysis of Variance (ANOVA)**
 
 -   Taking into account clusters:
 
@@ -196,7 +197,7 @@ The data present a normal distribution.
     hist(resfruitnotot,
          main = "Residuals",
          xlab = "Residuals", 
-         col = "lightgreen", 
+         col = "blue", 
          border = "black",
          breaks = 20)
     ```
@@ -238,3 +239,161 @@ ggplot(dftotal, aes(x = Treatment, y = tfnumber)) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 ```
+
+## Fruit Weight
+
+### Statistical analysis
+
+**Analysis of Variance (ANOVA)**
+
+```{r}
+FWeightTotal <- aov(fweight~Treatment*Block, data = dftotal) 
+summary(FWeightTotal)
+```
+
+### Interpretation:
+
+**Treatments:** The analysis revealed that the treatments (Control, EXAm, Infes, Infes + EXAm, Infes + Captan) had no statistically significant effect on fruit weight (p = 0.189), indicating that observed differences were likely due to random variation rather than the treatments.
+
+**Blocks:** Similarly, the block effect (p = 0.927) and the interaction between treatment and block (p = 0.720) were not significant, suggesting that variability across blocks and their interaction with treatments did not meaningfully impact fruit weight.
+
+**Residuals:** A large portion of variability remained unexplained (Residuals Sum of Squares = 22,763), which might reflect unmeasured factors or experimental limitations.
+
+**In General:** The lack of significant effects could stem from insufficient influence of the treatments, variability in application or measurement, or inadequate statistical power due to only three repetitions per block. To improve future analyses, increasing replication, refining measurement techniques, ensuring consistent application of treatments and inoculation, and exploring additional factors such as environmental conditions are recommended.
+
+**Suggestion:** To explore potential trends in the data, post-hoc tests like Tukey's HSD will be performed even if the ANOVA was not significant.
+
+## Test of Statistical Assumptions
+
+**Normality**
+
+```{r}
+resFweightTotal <- residuals(FWeightTotal) 
+shapiro.test(resFweightTotal)
+```
+
+### **Interpretation**
+
+P-value = 0.000099. The p-value is less than 0.05 meaning that it is not normally distributed. This violates the normality assumption of ANOVA.
+
+## Suggested Remedies
+
+Based on the results, the residuals of the original ANOVA model were not normally distributed, suggesting a need for data transformation or alternative methods.
+
+### **1. Data Transformation**
+
+```{r}
+# Log transformation
+dftotal$fweight_log <- log(dftotal$fweight)
+
+# Re-run ANOVA with transformed data
+FWeightTotal_log <- aov(fweight_log ~ Treatment * Block, data = dftotal)
+summary(FWeightTotal_log)
+
+# Test normality of residuals
+shapiro.test(residuals(FWeightTotal_log))
+```
+
+### **Interpretation:**
+
+The log transformation improved the residuals' normality slightly (W increased from 0.91562 to 0.93677), but they are still not normally distributed, as evidenced by the Shapiro-Wilk p-value of 0.001003. This suggests that the log transformation did not fully address the normality issue. Thus, we will shift to non-parametric alternatives like the Kruskal-Wallis Test.
+
+## **2. Non-Parametric Test**
+
+The transformations do not achieve normality, therefore **Kruskal-Wallis test** which does not require the assumption of normality will be performed.
+
+```{r}
+FWeightKW <- kruskal.test(fweight ~ Treatment, data = dftotal)
+```
+
+### **Interpretation**
+
+Since the **p-value (0.01373)** is **less than 0.05**, this indicates that there is a statistically significant difference in fruit weight distributions among the treatment groups.
+
+## **Homoscedasticity**
+
+Test for homoscedasticity using Bartlett's test.
+
+```{r}
+bartlett.test(fweight ~ Treatment, data = dftotal)
+```
+
+Since the **Kruskal-Wallis test** indicates a **statistically significant result** (p-value = 0.01373), the next step is to conduct **post-hoc pairwise comparisons** to identify which treatment groups differ significantly from each other.
+
+## **Visualization of the Data's Behaviour**
+
+Usage of **`qqnorm()`** and **`qqline()`** functions to visualize the normality of the residuals or transformed data.
+
+```{r}
+qqnorm(resFweightTotal, main = "Q-Q Plot")
+qqline(resFweightTotal, col = "red", lwd = 2) 
+hist(resFweightTotal,
+     main = "Residuals",
+     xlab = "Residuals", 
+     col = "maroon", 
+     border = "black",
+     breaks = 20)
+```
+
+## **Non-parametric Post-Hoc Test (Dunn's Test)**
+
+The Kruskal-Wallis test suggests significant differences in fruit weight distributions across the treatments. However, further non-parametric post-hoc analysis is needed to determine which specific treatment groups are different, thus, Dunn's test was performed.
+
+```{r}
+dunn_results <- dunnTest(fweight ~ Treatment, data = dftotal, method = "bonferroni")
+dunn <- dunn_results$res$P.adj
+names(dunn) <- dunn_results$res$Comparison
+dunnfinal <- multcompLetters(dunn)
+dunn_letters_df <- data.frame(
+  Treatment = names(dunnfinal$Letters),
+  letters = dunnfinal$Letters
+)
+dunn_letters_df$Treatment <- gsub(" ", "", dunn_letters_df$Treatment)
+library(dplyr)
+df0_merged <- left_join(dftotal, dunn_letters_df, by = "Treatment")
+```
+
+### Visualization of Data
+
+```{r}
+letter_positions <- df0_merged %>%
+  group_by(Treatment) %>%
+  summarise(max_fweight = max(fweight, na.rm = TRUE)) %>%
+  left_join(dunn_letters_df, by = "Treatment")
+y_adjust <- 0.5
+ggplot(df0_merged, aes(x = Treatment, y = fweight)) +
+  geom_boxplot(aes(fill = Treatment), color = "black") +  # Boxplot with color
+  geom_text(data = letter_positions,                    # Use precomputed letter positions
+            aes(x = Treatment, 
+                y = max_fweight + y_adjust, 
+                label = letters), 
+            size = 2, vjust = 0) +  # Position letters just above the boxplots
+  labs(
+    title = "Effect of Treatment on Fruit Weight",
+    x = "Treatment",
+    y = "Fruit Weight"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),             # Center the title
+    axis.text.x = element_text(angle = 45, hjust = 1)   # Rotate x-axis labels for clarity
+  )
+```
+
+### Interpretation
+
+The analysis of fruit weight using the Kruskal-Wallis test confirmed a statistically significant difference among treatment groups; however, Dunn's post-hoc test revealed considerable overlap, as indicated by the similar letters shared in the treatments.
+
+Particularly:
+
+-   **Control group** (no treatment, no inoculation) overlaps with the "ab" group, showing no significant difference from certain treatments.
+
+-   **EXAm** (extract without pathogen) exhibited variable performance, appearing in both the **ac** and **cd** groups, suggesting inconsistent effects.
+
+-   **Infes** (pathogen-inoculated, no treatment) was consistently part of the largest group (**abcd**), indicating it does not significantly differ from most other treatments.
+
+-   **Infes + Captan** (fungicide with inoculation) appeared in both **abcd** and **bd** groups, showing a slight trend toward improved performance but without strong statistical separation.
+
+-   **Infes + EXAm** (extract with inoculation) also grouped within **abcd**, demonstrating no clear differentiation from untreated or pathogen-inoculated groups.
+
+In general, while the analysis detected some differences, the substantial overlap between treatments suggests that their effects on fruit weight are not consistently distinct, with only minor trends observed for **EXAm** and **Infes + Captan**.
