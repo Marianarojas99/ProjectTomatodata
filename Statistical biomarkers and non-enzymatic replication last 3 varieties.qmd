@@ -1,0 +1,645 @@
+---
+title: "Biomarkers"
+format: html
+editor: visual
+---
+
+## Bio markers and Non- enzymatic variables
+
+The data collection started from day 45, where transplantation was carried out. Then every two weeks bio markers and non enzymatic variables were gathered (60, 75, 90, 105 days).
+
+**Required libraries**
+
+```{r,warning=FALSE, message=FALSE}
+if (!require("multcompView")) install.packages("multcompView")
+if (!require("dplyr")) install.packages("dplyr")
+if (!require("PMCMRplus")) install.packages("PMCMRplus")
+library(ggplot2)
+```
+
+Call the data
+
+```{r}
+library(readxl)
+df <- read_excel("DATA/tomato-clean.xlsx", sheet = 3)
+posthoc_letters_list <- list()
+```
+
+## B_carotene
+
+### Statistical analysis
+
+Create an empty list to fill with data of each day.
+
+```{r}
+Days <- c(45, 60, 75, 90, 105)
+
+results_table_B_carotene <- data.frame(
+  Day = numeric(),
+  Test = character(),
+  Transformation = character(),
+  PostHoc_Method = character(),
+  stringsAsFactors = FALSE
+)
+posthoc_letters_list_B_carotene <- list()
+
+```
+
+In the following for loop iterates over each day in the "Days" variable, performing several statistical operations on the data for each specific day. For each day, it filters the dataset to include only rows corresponding to that day, replaces missing values in the "B carotene" column with zero, and specifies *Block* and *Treatment* as factors. Then, an ANOVA is performed to test the effect of *Treatment* on B carotene*,* and the residuals are checked for normality using the Shapiro-Wilk test. If the residuals are not normally distributed, various transformations (square root, log, inverse) are applied to the data, and the corresponding ANOVA and normality tests are repeated. If all transformations fail to satisfy normality, a non-parametric Friedman test is performed. Post-hoc tests are conducted to identify significant differences between treatments, with the results stored in a table, including the day, test type, transformation used, and post-hoc method.
+
+```{r}
+for (dia in Days) {
+  # Filtering by day
+  df_filtered <- df[df$Day == dia, ]
+
+  # Replace NA values with 0
+  df_filtered$B_carotene[is.na(df_filtered$B_carotene)] <- 0
+
+  # Specify factors
+  df_filtered$Block <- as.factor(df_filtered$Block)
+  df_filtered$Treatment <- as.factor(df_filtered$Treatment)
+
+  # Perform ANOVA, extract residuals, and Shapiro-Wilk test
+  anova_result <- aov(B_carotene ~ Treatment, data = df_filtered)
+  residuos <- residuals(anova_result)
+  shapiro_test_result <- shapiro.test(residuos)
+
+  # Check for normality assumptions
+  if (shapiro_test_result$p.value < 0.05) {
+    
+    # Square root transformation
+    df_filtered$B_carotene_sqrt <- sqrt(df_filtered$B_carotene)
+    anova_result_sqrt <- aov(B_carotene_sqrt ~ Treatment, data = df_filtered)
+    residuos_sqrt <- residuals(anova_result_sqrt)
+    shapiro_test_sqrt <- shapiro.test(residuos_sqrt)
+
+    if (shapiro_test_sqrt$p.value < 0.05) {
+      
+      # Log transformation
+      df_filtered$B_carotene_log <- log(df_filtered$B_carotene + 1)
+      anova_result_log <- aov(B_carotene_log ~ Treatment, data = df_filtered)
+      residuos_log <- residuals(anova_result_log)
+      shapiro_test_log <- shapiro.test(residuos_log)
+
+      if (shapiro_test_log$p.value < 0.05) {
+        
+        # Inverse transformation
+        df_filtered$B_carotene_inv <- 1 / (df_filtered$B_carotene + 1)
+        anova_result_inv <- aov(B_carotene_inv ~ Treatment, data = df_filtered)
+        residuos_inv <- residuals(anova_result_inv)
+        shapiro_test_inv <- shapiro.test(residuos_inv)
+
+        if (shapiro_test_inv$p.value < 0.05) {
+          
+          # Non-parametric test (Friedman)
+          friedman_result <- friedman.test(B_carotene ~ Treatment | Block, data = df_filtered)
+          
+          posthoc <- pairwise.wilcox.test(
+            df_filtered$B_carotene,
+            df_filtered$Treatment,
+            p.adjust.method = "bonferroni"
+          )
+
+          letters <- multcompLetters(posthoc$p.value)$Letters
+          posthoc_letters_list[[as.character(dia)]] <- letters
+
+          results_table_B_carotene <- rbind(results_table_B_carotene, data.frame(
+            Day = dia,
+            Test = "Friedman",
+            Transformation = "Non-Parametric",
+            PostHoc_Method = "Bonferroni"
+          ))
+        } else {
+          
+          posthoc <- TukeyHSD(anova_result_inv, "Treatment")
+          letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+          posthoc_letters_list[[as.character(dia)]] <- letters
+
+          results_table_B_carotene <- rbind(results_table_B_carotene, data.frame(
+            Day = dia,
+            Test = "ANOVA",
+            Transformation = "Inverse",
+            PostHoc_Method = "Tukey"
+          ))
+        }
+      } else {
+        
+        posthoc <- TukeyHSD(anova_result_log, "Treatment")
+        letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+
+        results_table_B_carotene <- rbind(results_table_B_carotene, data.frame(
+          Day = dia,
+          Test = "ANOVA",
+          Transformation = "Log",
+          PostHoc_Method = "Tukey"
+        ))
+      }
+    } else {
+      
+      posthoc <- TukeyHSD(anova_result_sqrt, "Treatment")
+      letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+      posthoc_letters_list[[as.character(dia)]] <- letters
+
+      results_table_B_carotene <- rbind(results_table_B_carotene, data.frame(
+        Day = dia,
+        Test = "ANOVA",
+        Transformation = "Square Root",
+        PostHoc_Method = "Tukey"
+      ))
+    }
+  } else {
+    
+    posthoc <- TukeyHSD(anova_result, "Treatment")
+    letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+    posthoc_letters_list[[as.character(dia)]] <- letters
+
+    results_table_B_carotene <- rbind(results_table_B_carotene, data.frame(
+      Day = dia,
+      Test = "ANOVA",
+      Transformation = "None",
+      PostHoc_Method = "Tukey"
+    ))
+  }
+}
+
+# Remove duplicate rows (if any)
+results_table_B_carotene <- unique(results_table_B_carotene)
+
+```
+
+Print the results to know the transformations and the statistical analysis carried out.
+
+```{r}
+print(results_table_B_carotene)
+```
+
+print the statistical differences for each day
+
+```{r}
+for (dia in Days) {
+  cat("Día:", dia, "\n")
+  print(posthoc_letters_list[[as.character(dia)]])
+  cat("\n")
+}
+```
+
+Graphic
+
+```{r}
+
+```
+
+## Proteins
+
+### Statistical analysis
+
+Create an empty list to fill with data of each day.
+
+```{r}
+Days <- c(45, 60, 75, 90, 105)
+
+results_table_Proteins <- data.frame(
+  Day = numeric(),
+  Test = character(),
+  Transformation = character(),
+  PostHoc_Method = character(),
+  stringsAsFactors = FALSE
+)
+posthoc_letters_list_Proteins <- list()
+```
+
+In the following for loop, it iterates over each day in the "Days" variable, performing several statistical operations on the data for each specific day. For each day, it filters the dataset to include only rows corresponding to that day, replaces missing values in the "Proteins" column with zero, and specifies Block and Treatment as factors. Then, an ANOVA is performed to test the effect of Treatment on Proteins, and the residuals are checked for normality using the Shapiro-Wilk test. If the residuals are not normally distributed, various transformations (square root, log, inverse) are applied to the data, and the corresponding ANOVA and normality tests are repeated. If all transformations fail to satisfy normality, a non-parametric Friedman test is performed. Post-hoc tests are conducted to identify significant differences between treatments, with the results stored in a table, including the day, test type, transformation used, and post-hoc method.
+
+```{r, echo=FALSE}
+for (dia in Days) {
+  # Filtering by day
+  df_filtered <- df[df$Day == dia, ]
+
+  # Replace NA values with 0
+  df_filtered$Proteins[is.na(df_filtered$Proteins)] <- 0
+
+  # Specify factors
+  df_filtered$Block <- as.factor(df_filtered$Block)
+  df_filtered$Treatment <- as.factor(df_filtered$Treatment)
+
+  # Perform ANOVA, extract residuals, and Shapiro-Wilk test
+  anova_result <- aov(Proteins ~ Treatment, data = df_filtered)
+  residuos <- residuals(anova_result)
+  shapiro_test_result <- shapiro.test(residuos)
+
+  # Check for normality assumptions
+  if (shapiro_test_result$p.value < 0.05) {
+    
+    # Square root transformation
+    df_filtered$Proteins_sqrt <- sqrt(df_filtered$Proteins)
+    anova_result_sqrt <- aov(Proteins_sqrt ~ Treatment, data = df_filtered)
+    residuos_sqrt <- residuals(anova_result_sqrt)
+    shapiro_test_sqrt <- shapiro.test(residuos_sqrt)
+
+    if (shapiro_test_sqrt$p.value < 0.05) {
+      
+      # Log transformation
+      df_filtered$Proteins_log <- log(df_filtered$Proteins + 1)
+      anova_result_log <- aov(Proteins_log ~ Treatment, data = df_filtered)
+      residuos_log <- residuals(anova_result_log)
+      shapiro_test_log <- shapiro.test(residuos_log)
+
+      if (shapiro_test_log$p.value < 0.05) {
+        
+        # Inverse transformation
+        df_filtered$Proteins_inv <- 1 / (df_filtered$Proteins + 1)
+        anova_result_inv <- aov(Proteins_inv ~ Treatment, data = df_filtered)
+        residuos_inv <- residuals(anova_result_inv)
+        shapiro_test_inv <- shapiro.test(residuos_inv)
+
+        if (shapiro_test_inv$p.value < 0.05) {
+          
+          # Non-parametric test (Friedman)
+          friedman_result <- friedman.test(Proteins ~ Treatment | Block, data = df_filtered)
+          
+          # Use pairwise Wilcoxon test with exact = FALSE to avoid warning
+          posthoc <- pairwise.wilcox.test(
+            df_filtered$Proteins,
+            df_filtered$Treatment,
+            p.adjust.method = "bonferroni",
+            exact = FALSE  # Use approximation to avoid tie issue
+          )
+
+          letters <- multcompLetters(posthoc$p.value)$Letters
+          posthoc_letters_list[[as.character(dia)]] <- letters
+
+          results_table_Proteins <- rbind(results_table_Proteins, data.frame(
+            Day = dia,
+            Test = "Friedman",
+            Transformation = "Non-Parametric",
+            PostHoc_Method = "Bonferroni"
+          ))
+        } else {
+          
+          posthoc <- TukeyHSD(anova_result_inv, "Treatment")
+          letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+          posthoc_letters_list[[as.character(dia)]] <- letters
+
+          results_table_Proteins <- rbind(results_table_Proteins, data.frame(
+            Day = dia,
+            Test = "ANOVA",
+            Transformation = "Inverse",
+            PostHoc_Method = "Tukey"
+          ))
+        }
+      } else {
+        
+        posthoc <- TukeyHSD(anova_result_log, "Treatment")
+        letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+
+        results_table_Proteins <- rbind(results_table_Proteins, data.frame(
+          Day = dia,
+          Test = "ANOVA",
+          Transformation = "Log",
+          PostHoc_Method = "Tukey"
+        ))
+      }
+    } else {
+      
+      posthoc <- TukeyHSD(anova_result_sqrt, "Treatment")
+      letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+      posthoc_letters_list[[as.character(dia)]] <- letters
+
+      results_table_Proteins <- rbind(results_table_Proteins, data.frame(
+        Day = dia,
+        Test = "ANOVA",
+        Transformation = "Square Root",
+        PostHoc_Method = "Tukey"
+      ))
+    }
+  } else {
+    
+    posthoc <- TukeyHSD(anova_result, "Treatment")
+    letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+    posthoc_letters_list[[as.character(dia)]] <- letters
+
+    results_table_Proteins <- rbind(results_table_Proteins, data.frame(
+      Day = dia,
+      Test = "ANOVA",
+      Transformation = "None",
+      PostHoc_Method = "Tukey"
+    ))
+  }
+}
+
+# Remove duplicate rows (if any)
+results_table_Proteins <- unique(results_table_Proteins)
+
+```
+
+**Analysis of data**
+
+Print the results to know the transformations and the statistical analysis carried out.
+
+```{r}
+print(results_table_Proteins)
+```
+
+print the statistical differences for each day
+
+```{r}
+for (dia in Days) {
+  cat("Día:", dia, "\n")
+  print(posthoc_letters_list[[as.character(dia)]])
+  cat("\n")
+}
+```
+
+Graphic
+
+```         
+```
+
+## Yellow Caratenoids
+
+Repeat the same procedure per variable
+
+```{r, echo=FALSE}
+results_table_yellow_carotenoids <- data.frame(
+  Day = numeric(),
+  Test = character(),
+  Transformation = character(),
+  PostHoc_Method = character(),
+  stringsAsFactors = FALSE
+)
+
+# Initialize posthoc letters list
+posthoc_letters_list <- list()
+
+```
+
+```{r}
+for (dia in Days) {
+  cat("Día:", dia, "\n")
+  print(posthoc_letters_list[[as.character(dia)]])
+  cat("\n")
+}
+
+# Loop through each day
+for (dia in Days) {
+  
+  # Filter data for the specific day
+  df_filtered <- df[df$Day == dia, ]
+  
+  # Check if the column 'yellow_carotenoids' exists
+  if ("yellow_carotenoids" %in% colnames(df)) {
+    
+    # Check if the column has NA values and replace them with 0
+    if (any(is.na(df_filtered$yellow_carotenoids))) {
+      df_filtered$yellow_carotenoids[is.na(df_filtered$yellow_carotenoids)] <- 0
+    }
+    
+    # Ensure 'Block' and 'Treatment' are factors
+    df_filtered$Block <- as.factor(df_filtered$Block)
+    df_filtered$Treatment <- as.factor(df_filtered$Treatment)
+    
+    # Perform ANOVA on the original data (yellow_carotenoids ~ Treatment)
+    anova_result <- aov(yellow_carotenoids ~ Treatment, data = df_filtered)
+    residuos <- residuals(anova_result)
+    shapiro_test_result <- shapiro.test(residuos)
+    
+    # If residuals are not normally distributed, transform the data
+    if (shapiro_test_result$p.value < 0.05) {
+      
+      # Square root transformation
+      df_filtered$yellow_carotenoids_sqrt <- sqrt(df_filtered$yellow_carotenoids)
+      anova_result_sqrt <- aov(yellow_carotenoids_sqrt ~ Treatment, data = df_filtered)
+      residuos_sqrt <- residuals(anova_result_sqrt)
+      shapiro_test_sqrt <- shapiro.test(residuos_sqrt)
+      
+      if (shapiro_test_sqrt$p.value < 0.05) {
+       
+        # Log transformation
+        df_filtered$yellow_carotenoids_log <- log(df_filtered$yellow_carotenoids + 1)  
+        anova_result_log <- aov(yellow_carotenoids_log ~ Treatment, data = df_filtered)
+        residuos_log <- residuals(anova_result_log)
+        shapiro_test_log <- shapiro.test(residuos_log)
+        
+        if (shapiro_test_log$p.value < 0.05) {
+       
+          # Friedman test if normality assumption is violated
+          friedman_result <- friedman.test(yellow_carotenoids ~ Treatment | Block, data = df_filtered)
+          
+          # Post-hoc pairwise test using Wilcoxon (Bonferroni adjustment)
+          posthoc <- pairwise.wilcox.test(
+            df_filtered$yellow_carotenoids,
+            df_filtered$Treatment,
+            p.adjust.method = "bonferroni"
+          )
+          
+          # Get letters for the post-hoc test
+          letters <- multcompLetters(posthoc$p.value)$Letters
+          posthoc_letters_list[[as.character(dia)]] <- letters
+          
+          # Record the results in the results table
+          results_table_yellow_carotenoids <- rbind(results_table_yellow_carotenoids, data.frame(
+            Day = dia,
+            Test = "Friedman",
+            Transformation = "Non-Parametric",
+            PostHoc_Method = "Bonferroni"
+          ))
+        } else {
+          
+          # If normality assumption is met, perform Tukey's test on log-transformed data
+          posthoc <- TukeyHSD(anova_result_log, "Treatment")
+          letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+          posthoc_letters_list[[as.character(dia)]] <- letters
+          
+          results_table_yellow_carotenoids <- rbind(results_table_yellow_carotenoids, data.frame(
+            Day = dia,
+            Test = "ANOVA",
+            Transformation = "Log",
+            PostHoc_Method = "Tukey"
+          ))
+        }
+      } else {
+        
+        # If square root transformation works, perform Tukey's test
+        posthoc <- TukeyHSD(anova_result_sqrt, "Treatment")
+        letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+        
+        results_table_yellow_carotenoids <- rbind(results_table_yellow_carotenoids, data.frame(
+          Day = dia,
+          Test = "ANOVA",
+          Transformation = "Square Root",
+          PostHoc_Method = "Tukey"
+        ))
+      }
+    } else {
+      
+      # If normality assumption is met, perform Tukey's test on the original data
+      posthoc <- TukeyHSD(anova_result, "Treatment")
+      letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+      posthoc_letters_list[[as.character(dia)]] <- letters
+      
+      results_table_yellow_carotenoids <- rbind(results_table_yellow_carotenoids, data.frame(
+        Day = dia,
+        Test = "ANOVA",
+        Transformation = "None",
+        PostHoc_Method = "Tukey"
+      ))
+    }
+    
+  } else {
+    print("Column 'yellow_carotenoids' not found in the data")
+  }
+}
+```
+
+**Analysis of data**
+
+```{r}
+print(results_table_Superoxide)
+
+```
+
+```{r}
+for (dia in Days) {
+  cat("Día:", dia, "\n")
+  print(posthoc_letters_list[[as.character(dia)]])
+  cat("\n")
+}
+```
+
+Graph
+
+```{r}
+# Initialize results table for yellow carotenoids
+results_table_yellow_carotenoids <- data.frame(
+  Day = numeric(),
+  Test = character(),
+  Transformation = character(),
+  PostHoc_Method = character(),
+  stringsAsFactors = FALSE
+)
+
+# Initialize posthoc letters list
+posthoc_letters_list <- list()
+
+# Loop through each day
+for (dia in Days) {
+  
+  # Filter data for the specific day
+  df_filtered <- df[df$Day == dia, ]
+  
+  # Check if the column 'yellow_carotenoids' exists
+  if ("yellow_carotenoids" %in% colnames(df)) {
+    
+    # Check if the column has NA values and replace them with 0
+    if (any(is.na(df_filtered$yellow_carotenoids))) {
+      df_filtered$yellow_carotenoids[is.na(df_filtered$yellow_carotenoids)] <- 0
+    }
+    
+    # Ensure 'Block' and 'Treatment' are factors
+    df_filtered$Block <- as.factor(df_filtered$Block)
+    df_filtered$Treatment <- as.factor(df_filtered$Treatment)
+    
+    # Perform ANOVA on the original data (yellow_carotenoids ~ Treatment)
+    anova_result <- aov(yellow_carotenoids ~ Treatment, data = df_filtered)
+    residuos <- residuals(anova_result)
+    shapiro_test_result <- shapiro.test(residuos)
+    
+    # If residuals are not normally distributed, transform the data
+    if (shapiro_test_result$p.value < 0.05) {
+      
+      # Square root transformation
+      df_filtered$yellow_carotenoids_sqrt <- sqrt(df_filtered$yellow_carotenoids)
+      anova_result_sqrt <- aov(yellow_carotenoids_sqrt ~ Treatment, data = df_filtered)
+      residuos_sqrt <- residuals(anova_result_sqrt)
+      shapiro_test_sqrt <- shapiro.test(residuos_sqrt)
+      
+      if (shapiro_test_sqrt$p.value < 0.05) {
+       
+        # Log transformation
+        df_filtered$yellow_carotenoids_log <- log(df_filtered$yellow_carotenoids + 1)  
+        anova_result_log <- aov(yellow_carotenoids_log ~ Treatment, data = df_filtered)
+        residuos_log <- residuals(anova_result_log)
+        shapiro_test_log <- shapiro.test(residuos_log)
+        
+        if (shapiro_test_log$p.value < 0.05) {
+       
+          # Friedman test if normality assumption is violated
+          friedman_result <- friedman.test(yellow_carotenoids ~ Treatment | Block, data = df_filtered)
+          
+          # Post-hoc pairwise test using Wilcoxon (Bonferroni adjustment)
+          posthoc <- pairwise.wilcox.test(
+            df_filtered$yellow_carotenoids,
+            df_filtered$Treatment,
+            p.adjust.method = "bonferroni"
+          )
+          
+          # Get letters for the post-hoc test
+          letters <- multcompLetters(posthoc$p.value)$Letters
+          posthoc_letters_list[[as.character(dia)]] <- letters
+          
+          # Record the results in the results table
+          results_table_yellow_carotenoids <- rbind(results_table_yellow_carotenoids, data.frame(
+            Day = dia,
+            Test = "Friedman",
+            Transformation = "Non-Parametric",
+            PostHoc_Method = "Bonferroni"
+          ))
+        } else {
+          
+          # If normality assumption is met, perform Tukey's test on log-transformed data
+          posthoc <- TukeyHSD(anova_result_log, "Treatment")
+          letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+          posthoc_letters_list[[as.character(dia)]] <- letters
+          
+          results_table_yellow_carotenoids <- rbind(results_table_yellow_carotenoids, data.frame(
+            Day = dia,
+            Test = "ANOVA",
+            Transformation = "Log",
+            PostHoc_Method = "Tukey"
+          ))
+        }
+      } else {
+        
+        # If square root transformation works, perform Tukey's test
+        posthoc <- TukeyHSD(anova_result_sqrt, "Treatment")
+        letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+        posthoc_letters_list[[as.character(dia)]] <- letters
+        
+        results_table_yellow_carotenoids <- rbind(results_table_yellow_carotenoids, data.frame(
+          Day = dia,
+          Test = "ANOVA",
+          Transformation = "Square Root",
+          PostHoc_Method = "Tukey"
+        ))
+      }
+    } else {
+      
+      # If normality assumption is met, perform Tukey's test on the original data
+      posthoc <- TukeyHSD(anova_result, "Treatment")
+      letters <- multcompLetters(posthoc$Treatment[, "p adj"])$Letters
+      posthoc_letters_list[[as.character(dia)]] <- letters
+      
+      results_table_yellow_carotenoids <- rbind(results_table_yellow_carotenoids, data.frame(
+        Day = dia,
+        Test = "ANOVA",
+        Transformation = "None",
+        PostHoc_Method = "Tukey"
+      ))
+    }
+    
+  } else {
+    print("Column 'yellow_carotenoids' not found in the data")
+  }
+}
+
+# Print posthoc test results for each day
+for (dia in Days) {
+  cat("Día:", dia, "\n")
+  print(posthoc_letters_list[[as.character(dia)]])
+  cat("\n")
+}
+
+```
