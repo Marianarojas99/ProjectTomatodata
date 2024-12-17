@@ -90,7 +90,7 @@ P-value = 0.1073 means that data has a normal distribution
 
 Since we are interested in knowing the effect of the treatments and not the effect of the clusters, we continue the analysis with the data that contemplates the total, the one that sum of the clusters.
 
-Visualize the behavior of the data
+**Visualize the behavior of the data**
 
 ```{r}
 qqnorm(resYieldtotal, main = "Q-Q Plot")
@@ -104,7 +104,7 @@ hist(resYieldtotal,
 
 ```
 
-Post hoc test tukey
+**Post hoc test tukey**
 
 ```{r, warning=FALSE}
 TukeyHSD(Yieldtotal, "Treatment")
@@ -122,7 +122,7 @@ Infes + Captan ("bc"): These plants share a group with Infes ("b") and the Contr
 
 Infes + EXAm ("ac"): These plants are in an intermediate group ("ac"), showing results similar to EXAm-treated healthy plants ("a") and also overlapping with group "c" (e.g., Captan-treated or untreated controls).
 
-```{r}
+```{r,warning=FALSE}
 ggplot(dftotal, aes(x = Treatment, y = tfyield)) +
   geom_boxplot(aes(fill = Treatment), color = "black") +  
   geom_text(aes(x = Treatment, 
@@ -188,7 +188,7 @@ The data present a normal distribution.
 
 -   Since we are interested in knowing the effect of the treatments and not the effect of the clusters, we continue the analysis with the data that contemplates the total, the one that sum of the clusters.
 
-    Visualize the behavior of the data
+    **Visualize the behavior of the data**
 
     ```{r}
     qqnorm(resfruitnotot, main = "Q-Q Plot")
@@ -201,7 +201,7 @@ The data present a normal distribution.
          breaks = 20)
     ```
 
-Homocedasticity
+**Homocedasticity**
 
 ```{r}
 bartlett.test(resfruitnotot~dftotal$Treatment)
@@ -209,7 +209,7 @@ bartlett.test(resfruitnotot~dftotal$Treatment)
 
 There is no statistically significant evidence to suggest that the variances of the response variable differ across the treatment groups. The assumption of homogeneity of variances is satisfied
 
-Post hoc test tukey
+**Post hoc test tukey**
 
 ```{r, warning=FALSE}
 tukey_result1 <- TukeyHSD(fruitnototal, "Treatment")
@@ -225,7 +225,7 @@ Infes + Captan ("bc"): These plants share a group with Infes ("b") and the Contr
 
 Infes + EXAm ("ac"): These plants are in an intermediate group ("ac"), showing results similar to EXAm-treated healthy plants ("a") and also overlapping with group "c" (e.g., Captan-treated or untreated controls).
 
-```{r}
+```{r,warning=FALSE}
 ggplot(dftotal, aes(x = Treatment, y = tfnumber)) +
   geom_boxplot(aes(fill = Treatment), color = "black") +  
   geom_text(aes(x = Treatment, 
