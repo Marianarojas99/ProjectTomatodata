@@ -1,0 +1,33 @@
+---
+title: "Document 5"
+format: html
+editor: visual
+---
+
+Due to the biomarker assessments and non-enzymatic variables were taken over time, a repeated measures analysis can be performed.
+
+**Required libraries**
+
+```{r, warning=FALSE}
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+```
+
+Call the data
+
+```{r}
+library(readxl)
+df <- read_excel("DATA/tomato-clean.xlsx", sheet = 3)
+```
+
+## H~2~O~2~
+
+### Statistical analysis
+
+Fit the mixed-effects model
+
+```{r}
+model <- lmer(H202 ~ Day * Treatment + (1 | Block), data = df)
+summary(model)
+```
