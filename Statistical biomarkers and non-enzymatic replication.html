@@ -2,12 +2,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
+<<<<<<< HEAD
 <meta name="generator" content="quarto-1.6.33">
+=======
+<meta name="generator" content="quarto-1.5.57">
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
+<<<<<<< HEAD
 <title>Biomarkers</title>
+=======
+<title>Biomarkers and Non-enzymatic Variables</title>
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -63,10 +71,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="Statistical biomarkers and non-enzymatic replication_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="Statistical biomarkers and non-enzymatic replication_files/libs/quarto-html/anchor.min.js"></script>
 <link href="Statistical biomarkers and non-enzymatic replication_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<<<<<<< HEAD
 <link href="Statistical biomarkers and non-enzymatic replication_files/libs/quarto-html/quarto-syntax-highlighting-07ba0ad10f5680c660e360ac31d2f3b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="Statistical biomarkers and non-enzymatic replication_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="Statistical biomarkers and non-enzymatic replication_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="Statistical biomarkers and non-enzymatic replication_files/libs/bootstrap/bootstrap-b8d30c7eeda119d43de224048e70de8f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+=======
+<link href="Statistical biomarkers and non-enzymatic replication_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Statistical biomarkers and non-enzymatic replication_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Statistical biomarkers and non-enzymatic replication_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Statistical biomarkers and non-enzymatic replication_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 
 
 </head>
@@ -79,7 +94,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
+<<<<<<< HEAD
 <h1 class="title">Biomarkers</h1>
+=======
+<h1 class="title">Biomarkers and Non-enzymatic Variables</h1>
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 </div>
 
 
@@ -96,6 +115,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<<<<<<< HEAD
 <section id="bio-markers-and-non--enzymatic-variables" class="level2">
 <h2 class="anchored" data-anchor-id="bio-markers-and-non--enzymatic-variables">Bio markers and Non- enzymatic variables</h2>
 <p>The data collection started from day 45, where transplantation was carried out. Then every two weeks bio markers and non enzymatic variables were gathered (60, 75, 90, 105 days).</p>
@@ -276,6 +296,174 @@ Adjuntando el paquete: 'dplyr'</code></pre>
 <p>Print the results to know the transformations and the statistical analysis carried out.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_table_H202)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+=======
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>The data collection started from day 45, where transplantation was carried out. Then every two weeks biomarkers and non-enzymatic variables were gathered (60, 75, 90, 105 days).</p>
+<p><strong>Required libraries</strong></p>
+<p>Loading of the required libraries.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"multcompView"</span>)) <span class="fu">install.packages</span>(<span class="st">"multcompView"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"dplyr"</span>)) <span class="fu">install.packages</span>(<span class="st">"dplyr"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">require</span>(<span class="st">"PMCMRplus"</span>)) <span class="fu">install.packages</span>(<span class="st">"PMCMRplus"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(multcompView)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Calling of the data.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"DATA/tomato-clean.xlsx"</span>, <span class="at">sheet =</span> <span class="dv">3</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>posthoc_letters_list <span class="ot">&lt;-</span> <span class="fu">list</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="h2o2" class="level2">
+<h2 class="anchored" data-anchor-id="h2o2">1. H<sub>2</sub>O<sub>2</sub></h2>
+<section id="statistical-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis">Statistical Analysis</h3>
+<p><strong>Phase I. Empty list</strong></p>
+<p>Create an empty list to fill with data of each day.</p>
+<p><em>Code used for creating the empty list.</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>Days <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">45</span>, <span class="dv">60</span>, <span class="dv">75</span>, <span class="dv">90</span>, <span class="dv">105</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>results_table_H202 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">Day =</span> <span class="fu">numeric</span>(),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Test =</span> <span class="fu">character</span>(),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">Transformation =</span> <span class="fu">character</span>(),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">PostHoc_Method =</span> <span class="fu">character</span>(),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>posthoc_letters_list <span class="ot">&lt;-</span> <span class="fu">list</span>()  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Phase II. A For Loop</strong></p>
+<p>In the following for loop iterates over each day in the “Days” variable, performing several statistical operations on the data for each specific day. For each day, it filters the data set to include only rows corresponding to that day, replaces missing values in the “H<sub>2</sub>O<sub>2</sub>” column with zero, and specifies <em>Block</em> and <em>Treatment</em> as factors.</p>
+<p>Then, an ANOVA is performed to test the effect of <em>Treatment</em> on <em>H202,</em> and the residuals are checked for normality using the Shapiro-Wilk test. If the residuals are not normally distributed, various transformations (square root, log, inverse) are applied to the data, and the corresponding ANOVA and normality tests are repeated. If all transformations fail to satisfy normality, a non-parametric Friedman test is performed. Post-hoc tests are conducted to identify significant differences between treatments, with the results stored in a table, including the day, test type, transformation used, and post-hoc method.</p>
+<p><em>Code used for the A for Loop:</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (dia <span class="cf">in</span> Days) {</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Filtering by day</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  df_filtered <span class="ot">&lt;-</span> df[df<span class="sc">$</span>Day <span class="sc">==</span> dia, ]</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Replace NA values with 0</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  df_filtered<span class="sc">$</span>H202[<span class="fu">is.na</span>(df_filtered<span class="sc">$</span>H202)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Specify factors</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  df_filtered<span class="sc">$</span>Block <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df_filtered<span class="sc">$</span>Block)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  df_filtered<span class="sc">$</span>Treatment <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(df_filtered<span class="sc">$</span>Treatment)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Perform ANOVA, extract residuals, and Shapiro-Wilk test</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>  anova_result <span class="ot">&lt;-</span> <span class="fu">aov</span>(H202 <span class="sc">~</span> Treatment, <span class="at">data =</span> df_filtered)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  residuos <span class="ot">&lt;-</span> <span class="fu">residuals</span>(anova_result)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>  shapiro_test_result <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(residuos)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check for normality assumptions</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (shapiro_test_result<span class="sc">$</span>p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>) {</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Square root transformation</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    df_filtered<span class="sc">$</span>h202_sqrt <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(df_filtered<span class="sc">$</span>H202)</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    anova_result_sqrt <span class="ot">&lt;-</span> <span class="fu">aov</span>(h202_sqrt <span class="sc">~</span> Treatment, <span class="at">data =</span> df_filtered)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>    residuos_sqrt <span class="ot">&lt;-</span> <span class="fu">residuals</span>(anova_result_sqrt)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    shapiro_test_sqrt <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(residuos_sqrt)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (shapiro_test_sqrt<span class="sc">$</span>p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>) {</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Log transformation</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>      df_filtered<span class="sc">$</span>h202_log <span class="ot">&lt;-</span> <span class="fu">log</span>(df_filtered<span class="sc">$</span>H202 <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>      anova_result_log <span class="ot">&lt;-</span> <span class="fu">aov</span>(h202_log <span class="sc">~</span> Treatment, <span class="at">data =</span> df_filtered)</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>      residuos_log <span class="ot">&lt;-</span> <span class="fu">residuals</span>(anova_result_log)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>      shapiro_test_log <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(residuos_log)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (shapiro_test_log<span class="sc">$</span>p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>) {</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Inverse transformation</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        df_filtered<span class="sc">$</span>h202_inv <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">/</span> (df_filtered<span class="sc">$</span>H202 <span class="sc">+</span> <span class="dv">1</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>        anova_result_inv <span class="ot">&lt;-</span> <span class="fu">aov</span>(h202_inv <span class="sc">~</span> Treatment, <span class="at">data =</span> df_filtered)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>        residuos_inv <span class="ot">&lt;-</span> <span class="fu">residuals</span>(anova_result_inv)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        shapiro_test_inv <span class="ot">&lt;-</span> <span class="fu">shapiro.test</span>(residuos_inv)</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> (shapiro_test_inv<span class="sc">$</span>p.value <span class="sc">&lt;</span> <span class="fl">0.05</span>) {</span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Non-parametric test (Friedman)</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>          friedman_result <span class="ot">&lt;-</span> <span class="fu">friedman.test</span>(H202 <span class="sc">~</span> Treatment <span class="sc">|</span> Block, <span class="at">data =</span> df_filtered)</span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>          posthoc <span class="ot">&lt;-</span> <span class="fu">pairwise.wilcox.test</span>(</span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a>            df_filtered<span class="sc">$</span>H202,</span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a>            df_filtered<span class="sc">$</span>Treatment,</span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a>            <span class="at">p.adjust.method =</span> <span class="st">"bonferroni"</span></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a>          letters <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(posthoc<span class="sc">$</span>p.value)<span class="sc">$</span>Letters</span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>          posthoc_letters_list[[<span class="fu">as.character</span>(dia)]] <span class="ot">&lt;-</span> letters</span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>          results_table_H202 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(results_table_H202, <span class="fu">data.frame</span>(</span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a>            <span class="at">Day =</span> dia,</span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a>            <span class="at">Test =</span> <span class="st">"Friedman"</span>,</span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a>            <span class="at">Transformation =</span> <span class="st">"Non-Parametric"</span>,</span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a>            <span class="at">PostHoc_Method =</span> <span class="st">"Bonferroni"</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>          ))</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>        } <span class="cf">else</span> {</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>          posthoc <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(anova_result_inv, <span class="st">"Treatment"</span>)</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>          letters <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(posthoc<span class="sc">$</span>Treatment[, <span class="st">"p adj"</span>])<span class="sc">$</span>Letters</span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a>          posthoc_letters_list[[<span class="fu">as.character</span>(dia)]] <span class="ot">&lt;-</span> letters</span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a>          results_table_H202 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(results_table_H202, <span class="fu">data.frame</span>(</span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>            <span class="at">Day =</span> dia,</span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>            <span class="at">Test =</span> <span class="st">"ANOVA"</span>,</span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>            <span class="at">Transformation =</span> <span class="st">"Inverse"</span>,</span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>            <span class="at">PostHoc_Method =</span> <span class="st">"Tukey"</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>          ))</span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a>        posthoc <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(anova_result_log, <span class="st">"Treatment"</span>)</span>
+<span id="cb4-78"><a href="#cb4-78" aria-hidden="true" tabindex="-1"></a>        letters <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(posthoc<span class="sc">$</span>Treatment[, <span class="st">"p adj"</span>])<span class="sc">$</span>Letters</span>
+<span id="cb4-79"><a href="#cb4-79" aria-hidden="true" tabindex="-1"></a>        posthoc_letters_list[[<span class="fu">as.character</span>(dia)]] <span class="ot">&lt;-</span> letters</span>
+<span id="cb4-80"><a href="#cb4-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-81"><a href="#cb4-81" aria-hidden="true" tabindex="-1"></a>        results_table_H202 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(results_table_H202, <span class="fu">data.frame</span>(</span>
+<span id="cb4-82"><a href="#cb4-82" aria-hidden="true" tabindex="-1"></a>          <span class="at">Day =</span> dia,</span>
+<span id="cb4-83"><a href="#cb4-83" aria-hidden="true" tabindex="-1"></a>          <span class="at">Test =</span> <span class="st">"ANOVA"</span>,</span>
+<span id="cb4-84"><a href="#cb4-84" aria-hidden="true" tabindex="-1"></a>          <span class="at">Transformation =</span> <span class="st">"Log"</span>,</span>
+<span id="cb4-85"><a href="#cb4-85" aria-hidden="true" tabindex="-1"></a>          <span class="at">PostHoc_Method =</span> <span class="st">"Tukey"</span></span>
+<span id="cb4-86"><a href="#cb4-86" aria-hidden="true" tabindex="-1"></a>        ))</span>
+<span id="cb4-87"><a href="#cb4-87" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb4-88"><a href="#cb4-88" aria-hidden="true" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb4-89"><a href="#cb4-89" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb4-90"><a href="#cb4-90" aria-hidden="true" tabindex="-1"></a>      posthoc <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(anova_result_sqrt, <span class="st">"Treatment"</span>)</span>
+<span id="cb4-91"><a href="#cb4-91" aria-hidden="true" tabindex="-1"></a>      letters <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(posthoc<span class="sc">$</span>Treatment[, <span class="st">"p adj"</span>])<span class="sc">$</span>Letters</span>
+<span id="cb4-92"><a href="#cb4-92" aria-hidden="true" tabindex="-1"></a>      posthoc_letters_list[[<span class="fu">as.character</span>(dia)]] <span class="ot">&lt;-</span> letters</span>
+<span id="cb4-93"><a href="#cb4-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-94"><a href="#cb4-94" aria-hidden="true" tabindex="-1"></a>      results_table_H202 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(results_table_H202, <span class="fu">data.frame</span>(</span>
+<span id="cb4-95"><a href="#cb4-95" aria-hidden="true" tabindex="-1"></a>        <span class="at">Day =</span> dia,</span>
+<span id="cb4-96"><a href="#cb4-96" aria-hidden="true" tabindex="-1"></a>        <span class="at">Test =</span> <span class="st">"ANOVA"</span>,</span>
+<span id="cb4-97"><a href="#cb4-97" aria-hidden="true" tabindex="-1"></a>        <span class="at">Transformation =</span> <span class="st">"Square Root"</span>,</span>
+<span id="cb4-98"><a href="#cb4-98" aria-hidden="true" tabindex="-1"></a>        <span class="at">PostHoc_Method =</span> <span class="st">"Tukey"</span></span>
+<span id="cb4-99"><a href="#cb4-99" aria-hidden="true" tabindex="-1"></a>      ))</span>
+<span id="cb4-100"><a href="#cb4-100" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb4-101"><a href="#cb4-101" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb4-102"><a href="#cb4-102" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-103"><a href="#cb4-103" aria-hidden="true" tabindex="-1"></a>    posthoc <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(anova_result, <span class="st">"Treatment"</span>)</span>
+<span id="cb4-104"><a href="#cb4-104" aria-hidden="true" tabindex="-1"></a>    letters <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(posthoc<span class="sc">$</span>Treatment[, <span class="st">"p adj"</span>])<span class="sc">$</span>Letters</span>
+<span id="cb4-105"><a href="#cb4-105" aria-hidden="true" tabindex="-1"></a>    posthoc_letters_list[[<span class="fu">as.character</span>(dia)]] <span class="ot">&lt;-</span> letters</span>
+<span id="cb4-106"><a href="#cb4-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-107"><a href="#cb4-107" aria-hidden="true" tabindex="-1"></a>    results_table_H202 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(results_table_H202, <span class="fu">data.frame</span>(</span>
+<span id="cb4-108"><a href="#cb4-108" aria-hidden="true" tabindex="-1"></a>      <span class="at">Day =</span> dia,</span>
+<span id="cb4-109"><a href="#cb4-109" aria-hidden="true" tabindex="-1"></a>      <span class="at">Test =</span> <span class="st">"ANOVA"</span>,</span>
+<span id="cb4-110"><a href="#cb4-110" aria-hidden="true" tabindex="-1"></a>      <span class="at">Transformation =</span> <span class="st">"None"</span>,</span>
+<span id="cb4-111"><a href="#cb4-111" aria-hidden="true" tabindex="-1"></a>      <span class="at">PostHoc_Method =</span> <span class="st">"Tukey"</span></span>
+<span id="cb4-112"><a href="#cb4-112" aria-hidden="true" tabindex="-1"></a>    ))</span>
+<span id="cb4-113"><a href="#cb4-113" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb4-114"><a href="#cb4-114" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb4-115"><a href="#cb4-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-116"><a href="#cb4-116" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove duplicate rows (if any)</span></span>
+<span id="cb4-117"><a href="#cb4-117" aria-hidden="true" tabindex="-1"></a>results_table_H202 <span class="ot">&lt;-</span> <span class="fu">unique</span>(results_table_H202)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Phase III. Printing of the Results (Test, Transformation, Post-Hoc, and Significance Letters)</strong></p>
+<p>Print the results to know the transformations and the statistical analysis carried out.</p>
+<p><em>Codes used to print the results:</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_table_H202)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 <div class="cell-output cell-output-stdout">
 <pre><code>  Day  Test Transformation PostHoc_Method
 1  45 ANOVA           None          Tukey
@@ -285,6 +473,7 @@ Adjuntando el paquete: 'dplyr'</code></pre>
 5 105 ANOVA           None          Tukey</code></pre>
 </div>
 </div>
+<<<<<<< HEAD
 <p>print the statistical differences for each day</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (dia <span class="cf">in</span> Days) {</span>
@@ -292,6 +481,16 @@ Adjuntando el paquete: 'dplyr'</code></pre>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(posthoc_letters_list[[<span class="fu">as.character</span>(dia)]])</span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+=======
+<p>Print the statistical differences displaying the letters for each day.</p>
+<p><em>Code use to print the letters:</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (dia <span class="cf">in</span> Days) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"Día:"</span>, dia, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(posthoc_letters_list[[<span class="fu">as.character</span>(dia)]])</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 <div class="cell-output cell-output-stdout">
 <pre><code>Día: 45 
         EXAm        Infes Infes+Captan   Infes+EXAm      Control 
@@ -314,6 +513,7 @@ Día: 105
          "a"          "b"          "a"          "a"          "a" </code></pre>
 </div>
 </div>
+<<<<<<< HEAD
 <p>Graphic</p>
 </section>
 </section>
@@ -338,6 +538,70 @@ Día: 105
 <p>Print the results to know the transformations and the statistical analysis carried out.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(results_table_MDA)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+=======
+<p><strong>Phase IV. Graphics</strong></p>
+<p>A bar plot is used to show the mean <strong>H₂O₂</strong> concentration across different treatments and days, with error bars indicating the standard error of the mean. The x-axis represents the treatments, while the y-axis displays the <strong>H₂O₂</strong> concentration (μmol g⁻¹ DW), with post-hoc statistical letters above the bars to indicate significant differences. The plot is faceted by day, allowing for day-wise comparisons, with each facet having a free y-axis scale.</p>
+<p><em>Code use to create graph:</em></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_summary <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Day, Treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_H202 =</span> <span class="fu">mean</span>(H202, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">se_H202 =</span> <span class="fu">sd</span>(H202, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">n</span>()),  <span class="co"># Standard error</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">'drop'</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Add post-hoc letters to the summary table</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>df_summary<span class="sc">$</span>letters <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (dia <span class="cf">in</span> Days) {</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  df_summary<span class="sc">$</span>letters[df_summary<span class="sc">$</span>Day <span class="sc">==</span> dia] <span class="ot">&lt;-</span> posthoc_letters_list[[<span class="fu">as.character</span>(dia)]]</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot with error bars and statistical letters (gray bars)</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_summary, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> mean_H202)) <span class="sc">+</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"gray"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>), <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span>  <span class="co"># Set fill to gray</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">ymin =</span> mean_H202 <span class="sc">-</span> se_H202, <span class="at">ymax =</span> mean_H202 <span class="sc">+</span> se_H202),</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">width =</span> <span class="fl">0.25</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> letters, <span class="at">y =</span> mean_H202 <span class="sc">+</span> se_H202 <span class="sc">+</span> <span class="fl">0.05</span>), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">vjust =</span> <span class="dv">0</span>) <span class="sc">+</span>  <span class="co"># Adjust y position for letters</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Day, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span>  <span class="co"># Create separate plots for each day</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"H2O2 Concentration by Treatment and Day"</span>,</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Treatment"</span>,</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"H2O2 (μmol g⁻¹ DW)"</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),  <span class="co"># Rotate x-axis labels</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>),             <span class="co"># Center title</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),               <span class="co"># Customize facet label size</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.spacing =</span> <span class="fu">unit</span>(<span class="dv">1</span>, <span class="st">"lines"</span>)                    <span class="co"># Increase spacing between facets</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Save the plot with custom dimensions to make it longer and bigger</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="st">"H2O2_plot.png"</span>, <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">8</span>, <span class="at">units =</span> <span class="st">"in"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="notice" class="level2">
+<h2 class="anchored" data-anchor-id="notice">Notice:</h2>
+<p>The procedure for the following variables were conducted using the same codes as applied to the initial variable (H₂O₂). Specifically, the steps involved creating an empty list, implementing a for loop, printing the results, and generating graphical outputs. These steps were executed in the same manner to those used for the H₂O₂ variable.</p>
+</section>
+<section id="mda" class="level2">
+<h2 class="anchored" data-anchor-id="mda">2. MDA</h2>
+<section id="statistical-analysis-1" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-1">Statistical analysis</h3>
+<p><strong>Results of Test, Transformation, Post-Hoc</strong></p>
+<hr>
+<div class="cell">
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 <div class="cell-output cell-output-stdout">
 <pre><code>  Day  Test Transformation PostHoc_Method
 1  45 ANOVA           None          Tukey
@@ -347,6 +611,7 @@ Día: 105
 5 105 ANOVA           None          Tukey</code></pre>
 </div>
 </div>
+<<<<<<< HEAD
 <p>print the statistical differences for each day</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (dia <span class="cf">in</span> Days) {</span>
@@ -354,6 +619,11 @@ Día: 105
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(posthoc_letters_list[[<span class="fu">as.character</span>(dia)]])</span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span>
 <span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+=======
+<p><strong>Significance Letters</strong></p>
+<hr>
+<div class="cell">
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 <div class="cell-output cell-output-stdout">
 <pre><code>Día: 45 
         EXAm        Infes Infes+Captan   Infes+EXAm      Control 
@@ -376,6 +646,7 @@ Día: 105
          "a"          "a"          "a"          "a"          "a" </code></pre>
 </div>
 </div>
+<<<<<<< HEAD
 <p>Graphic</p>
 <pre><code></code></pre>
 </section>
@@ -394,6 +665,564 @@ Día: 105
 <span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>posthoc_letters_list <span class="ot">&lt;-</span> <span class="fu">list</span>()  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+=======
+<p><strong>Graphics</strong></p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="superoxide-anion" class="level2">
+<h2 class="anchored" data-anchor-id="superoxide-anion">3. Superoxide anion</h2>
+<section id="statistical-analysis-2" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-2">Statistical analysis</h3>
+<p><strong>Result of Test, Transformation, and Post-Hoc</strong></p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day  Test Transformation PostHoc_Method
+1  45 ANOVA           None          Tukey
+2  60 ANOVA           None          Tukey
+3  75 ANOVA           None          Tukey
+4  90 ANOVA           None          Tukey
+5 105 ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Día: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "b"          "c"          "c" 
+
+Día: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "b"          "b"          "a" 
+
+Día: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"          "c"          "a"         "ab"          "b" 
+
+Día: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "b"          "c"         "ac" 
+
+Día: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"         "ab"          "b" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="phenols" class="level2">
+<h2 class="anchored" data-anchor-id="phenols">4. Phenols</h2>
+<section id="statistical-analysis-3" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-3">Statistical analysis</h3>
+<p>Result of Test, Transformation, and Post-Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day     Test Transformation PostHoc_Method
+1  45    ANOVA           None          Tukey
+2  60    ANOVA           None          Tukey
+3  75    ANOVA           None          Tukey
+4  90 Friedman Non-Parametric     Bonferroni
+5 105 Friedman Non-Parametric     Bonferroni</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Día: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"          "c"          "a"         "ab"          "b" 
+
+Día: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"         "ab"          "b"         "ab"         "ab" 
+
+Día: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"         "ab"          "b"          "a"          "a" 
+
+Día: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm 
+         "a"          "a"          "a"          "a" 
+
+Día: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm 
+         "a"          "a"          "a"          "a" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="flavonoids" class="level2">
+<h2 class="anchored" data-anchor-id="flavonoids">5. Flavonoids</h2>
+<section id="statistical-analysis-4" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-4">Statistical analysis</h3>
+</section>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section"></h3>
+<p>Results of Test, Transformation, and Post-Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day  Test Transformation PostHoc_Method
+1  45 ANOVA           None          Tukey
+2  60 ANOVA           None          Tukey
+3  75 ANOVA           None          Tukey
+4  90 ANOVA           None          Tukey
+5 105 ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Day: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "b"          "a"          "a" 
+
+Day: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "b"          "a"          "b" 
+
+Day: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"         "bc"         "bc"          "b"         "ac" 
+
+Day: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"         "bc"          "a"         "ac" 
+
+Day: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"         "ab"          "a"          "a" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="vitamin-c" class="level2">
+<h2 class="anchored" data-anchor-id="vitamin-c">6. Vitamin C</h2>
+<section id="statistical-analysis-5" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-5">Statistical analysis</h3>
+<p>Results of Test, Transformation, and Post-Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day  Test Transformation PostHoc_Method
+1  45 ANOVA           None          Tukey
+2  60 ANOVA           None          Tukey
+3  75 ANOVA           None          Tukey
+4  90 ANOVA           None          Tukey
+5 105 ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Day: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "a" 
+
+Day: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"         "ab"         "ab"         "ab" 
+
+Day: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"         "ab"          "a"          "a"          "b" 
+
+Day: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "a" 
+
+Day: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "a" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-32-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="chlorophyll-a" class="level2">
+<h2 class="anchored" data-anchor-id="chlorophyll-a">7. Chlorophyll A</h2>
+<section id="statistical-analysis-6" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-6">Statistical analysis</h3>
+<p>Results of Test, Transformation, and Post-Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day  Test Transformation PostHoc_Method
+1  45 ANOVA           None          Tukey
+2  60 ANOVA           None          Tukey
+3  75 ANOVA           None          Tukey
+4  90 ANOVA           None          Tukey
+5 105 ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Día: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"         "bc"          "b"          "d"         "ac" 
+
+Día: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "a"          "b"          "b" 
+
+Día: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "a" 
+
+Día: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"         "ab"          "b"          "a"          "a" 
+
+Día: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"         "ab"          "b"          "c" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-37-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="chlorophyll-b" class="level2">
+<h2 class="anchored" data-anchor-id="chlorophyll-b">8. Chlorophyll B</h2>
+<section id="statistical-analysis-7" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-7">Statistical analysis</h3>
+<p>Results of Test, Transformation, and Post-Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day     Test Transformation PostHoc_Method
+1  45 Friedman Non-Parametric     Bonferroni
+2  60    ANOVA    Square Root          Tukey
+3  75    ANOVA           None          Tukey
+4  90    ANOVA           None          Tukey
+5 105    ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Día: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm 
+         "a"          "a"          "a"          "a" 
+
+Día: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "a"          "b"          "b" 
+
+Día: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "a" 
+
+Día: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"         "ac"          "c"          "b"         "ac" 
+
+Día: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "b" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="total-chlorophyll" class="level2">
+<h2 class="anchored" data-anchor-id="total-chlorophyll">9. Total Chlorophyll</h2>
+<section id="statistical-analysis-8" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-8">Statistical analysis</h3>
+<p>Results of Test, Transformation, and Post-Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day  Test Transformation PostHoc_Method
+1  45 ANOVA           None          Tukey
+2  60 ANOVA           None          Tukey
+3  75 ANOVA           None          Tukey
+4  90 ANOVA           None          Tukey
+5 105 ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significane Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Día: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"         "cd"          "c"          "a"         "bd" 
+
+Día: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "a"          "b"          "b" 
+
+Día: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "a" 
+
+Día: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"         "ab"          "b"          "a"         "ab" 
+
+Día: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "b"          "b"          "c" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="betacarotene" class="level2">
+<h2 class="anchored" data-anchor-id="betacarotene">10. Betacarotene</h2>
+<section id="statistical-analysis-9" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-9">Statistical analysis</h3>
+<p>Results of Test, Transformation, and Post-Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day     Test Transformation PostHoc_Method
+1  45 Friedman Non-Parametric     Bonferroni
+2  60    ANOVA           None          Tukey
+3  75    ANOVA           None          Tukey
+4  90    ANOVA           None          Tukey
+5 105    ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Day: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm 
+         "a"          "a"          "a"          "a" 
+
+Day: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"          "c"          "a"         "bc"          "c" 
+
+Day: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"         "ab"          "a"          "b"         "ab" 
+
+Day: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"         "ab"          "b"          "a"          "a" 
+
+Day: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"         "ab"          "b"          "c" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-52-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="proteins" class="level2">
+<h2 class="anchored" data-anchor-id="proteins">11. Proteins</h2>
+<section id="statistical-analysis-10" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-10">Statistical analysis</h3>
+<p>Results of Test, Transformation, and Post-Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day     Test Transformation PostHoc_Method
+1  45    ANOVA           None          Tukey
+2  60 Friedman Non-Parametric     Bonferroni
+3  75    ANOVA           None          Tukey
+4  90    ANOVA           None          Tukey
+5 105    ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Day: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "a" 
+
+Day: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm 
+         "a"          "a"          "a"          "a" 
+
+Day: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "b"          "b"         "ac"         "bc" 
+
+Day: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"          "c"          "c"          "a"         "bc" 
+
+Day: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "b" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-57-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="yellow-carotenoids" class="level2">
+<h2 class="anchored" data-anchor-id="yellow-carotenoids">12. Yellow Carotenoids</h2>
+<section id="statistical-analysis-11" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-11">Statistical analysis</h3>
+<p>Result of Test, Transformation, and Post Hoc</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Day     Test Transformation PostHoc_Method
+1  45    ANOVA            Log          Tukey
+2  60 Friedman Non-Parametric     Bonferroni
+3  75 Friedman Non-Parametric     Bonferroni
+4  90    ANOVA           None          Tukey
+5 105    ANOVA           None          Tukey</code></pre>
+</div>
+</div>
+<p>Significance Letters</p>
+<hr>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Day: 45 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+        "ab"          "a"          "a"          "b"          "a" 
+
+Day: 60 
+        EXAm        Infes Infes+Captan   Infes+EXAm 
+         "a"          "a"          "a"          "a" 
+
+Day: 75 
+        EXAm        Infes Infes+Captan   Infes+EXAm 
+         "a"          "a"          "a"          "a" 
+
+Day: 90 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"         "ab"          "b"          "a"          "a" 
+
+Day: 105 
+        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
+         "a"          "a"          "a"          "a"          "b" </code></pre>
+</div>
+</div>
+<p>Graphics</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Statistical-biomarkers-and-non-enzymatic-replication_files/figure-html/unnamed-chunk-62-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 </section>
 
 </main>

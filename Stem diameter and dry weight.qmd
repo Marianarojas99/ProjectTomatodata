@@ -1,0 +1,361 @@
+---
+title: "anlysis"
+format: html
+editor: visual
+---
+
+## Introduction
+
+This analysis examines three key plant growth parameters: - Stem diameter - Aerial dry weight - Root dry weight
+
+The data is divided into five blocks and five treatments as follows:
+
+**Treatment 1** : "Control" - Without treatment application (extract or fungicide) and without pathogen inoculation/infestation.
+
+**Treatment 2** : "EXAm" - With treatment application (extract or fungicide) but without pathogen inoculation/infestation.
+
+**Treatment 3** : "Infes" - Without treatment application (extract or fungicide) but with pathogen inoculation/infestation.
+
+**Treatment 4** : "Infes + EXAm" - With treatment application (extract) and pathogen inoculation/infestation.
+
+**Treatment 5** : "Infes + Captan" - With treatment application (fungicide) and pathogen inoculation/infestation.
+
+## Load Required Libraries
+
+```{r setup, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(readxl)
+library(agricolae)
+library(multcompView)
+library(dplyr)
+```
+
+## Data Import
+
+```{r}
+df <- read_excel("DATA/tomato-clean.xlsx", sheet = "plants")
+
+```
+
+## Statistical Analysis
+
+### Stem Diameter Analysis
+
+**ANOVA**
+
+```{r}
+stem_aov <- aov(`Stem diameter` ~ Treatment * Block, data = df)
+summary(stem_aov)
+
+```
+
+**Normality**
+
+```{r}
+res_stem <- residuals(stem_aov)
+shapiro.test(res_stem)
+```
+
+**Interpretation:**
+
+Treatments: The treatment factor is highly significant (p = 5.23e-05), indicating that the treatment has a clear and strong effect on the outcome. The variability in the response is primarily explained by the treatment, and there are clear differences between the groups.
+
+Blocks: The block factor is also significant (p = 0.00389), suggesting that blocks contribute to explaining the variability in the outcome. This means that grouping observations into blocks has a meaningful impact on the results.
+
+Treatment:Block Interaction: The interaction between treatment and block is not significant (p = 0.27561), indicating that the effect of treatments is consistent across blocks. There is no evidence that the treatment effect differs depending on the block.
+
+**Visualize the behavior of the data**
+
+```{r}
+par(mfrow=c(1,2))
+qqnorm(res_stem, main = "Q-Q Plot - Stem Diameter")
+qqline(res_stem, col = "red", lwd = 2)
+hist(res_stem,
+main = "Residuals - Stem Diameter",
+xlab = "Residuals",
+col = "lightblue",
+border = "black")
+```
+
+**Post hoc test tukey**
+
+```{r}
+tukey_stem <- TukeyHSD(stem_aov, "Treatment")
+print(tukey_stem)
+tukey_pvalues_stem <- tukey_stem$Treatment[, "p adj"]
+tukey_letters_stem <- multcompLetters(tukey_pvalues_stem)$Letters
+```
+
+-   **Infes ("b")**: These plants belong to group "b," indicating that their yield response is significantly lower than that of the EXAm-treated plants ("a") and different from the untreated healthy control (Control, "c"). This means that the Infes treatment caused a significant decrease in plant yield.
+
+-   **Infes + Captan ("bc")**: These plants share a group with Infes ("b") and Control ("c"), indicating that Captan provides moderate improvement, but not enough to restore the plants to the level of healthy plants treated with EXAm ("a").
+
+-   **Infes + EXAm ("ac")**: These plants belong to the "ac" group, showing results similar to EXAm-treated healthy plants ("a") and also overlapping with the Control group ("c"). This suggests that Infes + EXAm treatment partially restores the plants' health, but does not fully reach the level of the EXAm-treated plants.
+
+```{r}
+library(ggplot2)
+
+tukey_letters <- c(
+  "Control" = "c",
+  "EXAm" = "a",
+  "Infes" = "b",
+  "Infes+EXAm" = "ac",
+  "Infes+Captan" = "bc"
+)
+
+ggplot(df, aes(x = Treatment, y = `Root dry weight`, fill = Treatment)) +
+  geom_boxplot(width = 0.7, color = "black", fill = "white") +  
+  geom_text(aes(label = tukey_letters[Treatment],
+                y = max(`Root dry weight`) * 1.15),  
+            size = 5) +  
+  labs(title = "Effect of Treatment on Root Dry Weight",
+       x = "Treatment",
+       y = "Root Dry Weight (g)") +
+  theme_classic() + 
+  theme(
+    plot.title = element_text(size = 14, face = "bold", hjust = 0.5),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none",
+    panel.grid.major.y = element_line(color = "grey90"),  
+    panel.grid.minor = element_blank()
+  )
+```
+
+### Aerial Dry Weight Analysis
+
+```{r}
+#ANOVA
+aerial_aov <- aov(`Aereal dry weight` ~ Treatment* Block, data = df)
+summary(aerial_aov)
+
+```
+
+Treatments: The analysis showed that the treatments (Control, EXAm, Infes, Infes + EXAm, Infes + Captan) did not have a statistically significant effect on the stem diameter, aerial dry weight, or root dry weight (p-values \> 0.05). This suggests that any observed differences were likely due to random variation rather than the treatments themselves.
+
+Blocks: Similarly, the block effect (p \> 0.05) and the interaction between treatment and block (p \> 0.05) were not significant, indicating that variability across blocks and their interaction with treatments did not have a meaningful impact on the measured growth parameters.
+
+Residuals: A substantial portion of the variability remained unexplained (Residuals Sum of Squares = X), which could indicate unaccounted-for factors or limitations in the experimental setup.
+
+In General: The absence of significant treatment effects could be due to insufficient treatment effects, variability in implementation or measurement, or limited statistical power because of the small number of repetitions per block. To improve future studies, increasing the number of replications, refining measurement methods, ensuring consistent application of treatments, and considering additional environmental or biological factors would be beneficial.
+
+Suggestion: Although the ANOVA did not show significant results, post-hoc tests like Tukey's HSD can be performed to investigate potential trends or differences between treatment groups.
+
+**Normality**
+
+```{r}
+resAerealWeight <- residuals(aerial_aov) 
+shapiro.test(resAerealWeight)
+```
+
+After the data is log-transformed, the residuals do follow a normal distribution. This transformation was successful, indicating that the data now satisfies the normality assumption of ANOVA.
+
+**Data transformation**
+
+```{r}
+library(readxl)
+data <- read_excel("DATA/tomato-clean.xlsx", sheet = "plants")
+```
+
+```{r}
+# Log transformation
+data$aerial_weight_log <- log(data$`Aereal dry weight`)
+
+# Re-run ANOVA with transformed data
+aerial_weight_log <- aov(aerial_weight_log ~ Treatment, data = data)
+summary(aerial_weight_log)
+
+# Test normality of residuals
+shapiro.test(residuals(aerial_weight_log))
+
+```
+
+Interpretation:
+
+Treatments: The treatment factor is not significant (p = 0.716), indicating that the treatment does not have a statistically significant effect on the outcome (aerial weight in this case). The variability observed in the response variable is likely due to random variation rather than the treatment.
+
+Residuals: The residuals have a sum of squares of 1.1299, with a mean square of 0.05649. This suggests that there is some unexplained variability in the data, but it does not appear to be systematically related to the treatments.
+
+Shapiro-Wilk Normality Test: The Shapiro-Wilk test for normality of residuals gives a W value of 0.93853 and a p-value of 0.1369. Since the p-value is greater than 0.05, we fail to reject the null hypothesis that the residuals are normally distributed. This suggests that the assumption of normality holds for the residuals, making the ANOVA results valid.
+
+```{r}
+# Square root transformation
+data$aerial_weight_sqrt <- sqrt(data$`Aereal dry weight`)
+
+# Re-run ANOVA with transformed data
+aerial_weight_sqrt <- aov(aerial_weight_sqrt ~ Treatment, data = data)
+summary(aerial_weight_sqrt)
+
+# Test normality of residuals
+shapiro.test(residuals(aerial_weight_sqrt))
+```
+
+Interpretation:
+
+Treatments: The treatment factor is not significant (p = 0.776), indicating that the treatment does not have a statistically significant effect on the outcome (aerial weight in this case). This suggests that the observed differences in aerial weight are likely due to random variation and not due to the effect of the treatment.
+
+Residuals: The residuals have a sum of squares of 254.93, with a mean square of 12.747. While there is variability in the residuals, it does not appear to be systematically related to the treatments, which aligns with the non-significant treatment effect.
+
+Shapiro-Wilk Normality Test: The Shapiro-Wilk test for normality of residuals gives a W value of 0.91226 and a p-value of 0.03424. Since the p-value is less than 0.05, we reject the null hypothesis that the residuals are normally distributed. This indicates that the residuals are not normally distributed, which could potentially affect the validity of the ANOVA results. Non-normal residuals suggest that the assumptions of ANOVA may not be fully met, and the results should be interpreted with caution.
+
+```{r}
+# QQ plot
+qqnorm(residuals(aerial_weight_sqrt))
+qqline(residuals(aerial_weight_sqrt))
+
+# Boxplot
+boxplot(aerial_weight_sqrt ~ Treatment, data = data,
+        main = "Square root-transformed Aerial Dry Weight by Treatment",
+        ylab = "Sqrt(Aerial Dry Weight)",
+        xlab = "Treatment")
+```
+
+**Non-Parametric Test**
+
+The transformations do not achieve normality, therefore Kruskal-Wallis test which does not require the assumption of normality will be performed
+
+```{r}
+# Kruskal-Wallis test
+kruskal_test <- kruskal.test(data$`Aereal dry weight` ~ data$Treatment)
+print(kruskal_test)
+```
+
+There was no significant difference between the different treatment groups. This is consistent with the results of the previous parametric test (ANOVA). Even with the non-parametric approach, there was still no treatment effect found.
+
+### Root Dry Weight Analysis
+
+```{r}
+#ANOVA
+library(readxl)
+df <- read_excel("DATA/tomato-clean.xlsx", sheet = "plants")
+
+str(df)
+head(df)
+
+root_aov <- aov(`Root dry weight` ~ Treatment * Block, data = df)
+summary(root_aov)
+root_aov <- aov(`Root dry weight` ~ Treatment * Block, data = df)
+summary(root_aov)
+```
+
+-   Block effect significantly explains the variability in the data, suggesting systematic differences across blocks.
+
+-   Treatment and Treatment:Block interaction are not significant, meaning treatments have no measurable effect on the outcome variables, and this effect does not change across blocks.
+
+-   The high residual variance implies that other unmeasured factors or noise contribute to the unexplained variability.
+
+**Normality**
+
+```{r}
+resRootWeight <- residuals(root_aov)
+shapiro.test(resRootWeight)
+
+```
+
+**Interpretation:**
+
+Original hypothesis of Shapiro-Wilk test (H₀): the data follow a normal distribution.
+
+The p-value: 0.1422 \> 0.05, the original hypothesis could not be rejected, indicating that the residual data did not significantly deviate from normal distribution.
+
+**Visualize the behavior of the data**
+
+```{r}
+hist(resRootWeight, main = "Histogram of Residuals", xlab = "Residuals")
+qqnorm(resRootWeight)
+qqline(resRootWeight, col = "red")
+
+```
+
+**Post hoc test tukey**
+
+```{r}
+# Perform Tukey HSD test
+tukey_result <- TukeyHSD(root_aov, "Treatment")
+print(tukey_result)
+
+# Visualize the Tukey results
+plot(tukey_result)
+
+```
+
+All treatments, including EXAm, Infes, Infes + Captan, and Infes + EXAm, fall into the same group ("a"). This indicates that there are no significant differences in root dry weight across the treatments and the Control group.
+
+**Data transformation**
+
+```{r}
+# 1. Log transformation
+df$root_weight_log <- log(df$`Root dry weight`)
+root_weight_log <- aov(root_weight_log ~ Treatment, data = df)
+summary(root_weight_log)
+
+# Test normality of log-transformed data
+resRootWeight_log <- residuals(root_weight_log)
+shapiro.test(resRootWeight_log)
+
+# 2. Square root transformation
+df$root_weight_sqrt <- sqrt(df$`Root dry weight`)
+root_weight_sqrt <- aov(root_weight_sqrt ~ Treatment, data = df)
+summary(root_weight_sqrt)
+
+# Test normality of square root-transformed data
+shapiro.test(residuals(root_weight_sqrt))
+
+# Visual inspection
+# QQ plots
+par(mfrow=c(2,2))
+# Original data
+qqnorm(resRootWeight, main="Original Data")
+qqline(resRootWeight)
+# Log transformed
+qqnorm(resRootWeight_log, main="Log Transformed")
+qqline(resRootWeight_log)
+# Square root transformed
+qqnorm(residuals(root_weight_sqrt), main="Square Root Transformed")
+qqline(residuals(root_weight_sqrt))
+```
+
+```{r}
+# Boxplot
+par(mar=c(5,5,4,2))
+
+boxplot(`Root dry weight` ~ Treatment, data = df,
+        main = "Root Dry Weight by Treatment",
+        ylab = "Root Dry Weight (g)",
+        xlab = "Treatment",
+        cex.lab = 1.2,      
+        cex.axis = 1.1,    
+        cex.main = 1.3,   
+        col = "white",    
+        border = "black",  
+        boxwex = 0.7,      
+        whisklty = 1,      
+        outpch = 16,       
+        outcex = 1.2)   
+
+grid(nx = NA, ny = TRUE, lty = 2, col = "gray")
+
+par(mar=c(5,4,4,2))
+```
+
+**Non-Parametric Test**
+
+```{r}
+# Kruskal-Wallis test
+kruskal_test <- kruskal.test(df$`Root dry weight` ~ df$Treatment)
+print("Kruskal-Wallis Test Results:")
+print(kruskal_test)
+
+# Dunn's test for multiple comparisons (if needed)
+if(!require(dunn.test)) install.packages("dunn.test")
+library(dunn.test)
+
+# Perform Dunn's test with Bonferroni adjustment
+dunn_test <- dunn.test(df$`Root dry weight`, df$Treatment,
+                       method="bonferroni",
+                       kw=TRUE,
+                       label=TRUE)
+```
+
+There was no significant difference between the different treatment groups. This is consistent with the results of the previous parametric test (ANOVA). Even with the non-parametric approach, there was still no treatment effect found.
