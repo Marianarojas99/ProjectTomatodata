@@ -9,18 +9,24 @@ editor: visual
 ---
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ```{r}
 knitr::opts_chunk$set(fig.path = 'Graphs Replication Results/')
 ```
 
 =======
 <<<<<<< HEAD
+=======
+>>>>>>> ecde7e434af2c1fbb7f74842c828f9483ef9afa3
 ## Bio markers and Non- enzymatic variables
 
 The data collection started from day 45, where transplantation was carried out. Then every two weeks bio markers and non enzymatic variables were gathered (60, 75, 90, 105 days).
 
 **Required libraries**
 
+=======
+<<<<<<< HEAD
+>>>>>>> ecde7e434af2c1fbb7f74842c828f9483ef9afa3
 =======
 >>>>>>> ecde7e434af2c1fbb7f74842c828f9483ef9afa3
 # Introduction
