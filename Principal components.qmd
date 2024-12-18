@@ -1,0 +1,93 @@
+---
+title: "Principal components"
+format: html
+editor: visual
+---
+
+## Principal components graph
+
+Principal Components Analysis (PCA) is a statistical technique used to simplify complex datasets by reducing their dimensionality while retaining as much variability (information) as possible. Biomarkers and Non-enzymatic variables were used for the PCA.
+
+**Required libraries**
+
+```{r, message=FALSE}
+library(dplyr)
+library(plotly)
+
+```
+
+Call the data
+
+```{r}
+library(readxl)
+df <- read_excel("DATA/tomato-clean.xlsx", sheet = 3)
+```
+
+Since the PCA has to be done with only numerical variables, the numerical variables must be filtered out.
+
+```{r}
+df_num <- df %>%
+  select(H202, MDA, Superoxide, Phenols, Flavonoids, `Vitamin C`, 
+         `Chlorophyll A`, `Chlorophyll B`, `Total chlorophyll`, 
+         `B carotene`, Proteins, `yellow carotenoids`)
+
+
+```
+
+-   If the value is missing (`NA`), not a number (`NaN`), or infinite (`Inf` or `-Inf`), it replaces the value with `0`.
+
+-   Otherwise, it leaves the value unchanged.
+
+```{r}
+df_num_clean <- df_num %>%
+  mutate_all(~ifelse(is.na(.) | is.nan(.) | is.infinite(.), 0, .))
+
+```
+
+The function prcomp is used to do the principal components analysis.
+
+```{r}
+pca_result <- prcomp(df_num_clean, center = TRUE, scale. = TRUE)
+summary(pca_result)
+```
+
+**`pca_result$x`**: The PCA scores matrix
+
+This contains the transformed data, where each row represents an observation in the new coordinate system (principal components), and each column corresponds to a principal component (e.g., PC1, PC2, etc.).
+
+Adds the `Treatment` and `Day` columns from the original dataset `df` to the PCA scores dataframe. These variables are not part of the PCA but are important for interpreting the results.
+
+```{r}
+pca_scores <- as.data.frame(pca_result$x)
+pca_scores$Treatment <- df$Treatment  
+pca_scores$Day <- df$Day   
+```
+
+## Graphic
+
+```{r}
+library(ggplot2)
+ggplot(pca_scores, aes(x = PC1, y = PC2, color = Treatment, shape = as.factor(Day))) +
+  geom_point(size = 3) +
+  labs(title = "Principal components Analysis (PCA)",
+       x = "(PC1)",
+       y = "(PC2)",
+       color = "Treatment",
+       shape = "Day") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+### Interpretation
+
+#### **Separation Between Treatments:**
+
+The Infes+EXAm and EXAm treatments show a clear differentiation on the right side of the graph, indicating they have a distinct effect on the measured variables compared to Control and Infes.
+
+#### **Control and Infes:**
+
+These two treatments are grouped closely together, suggesting similar behavior in the analyzed variables.
+
+#### **Temporal Evolution:**
+
+As time progresses (especially on days 90 and 105), the separation between treatments becomes more evident, indicating that time influences the observed differences.
