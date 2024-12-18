@@ -1,7 +1,7 @@
 library(readxl)
 Data_1_Severity <- read_excel("DATA/Data (1).xlsx", 
                               sheet = "P. infestans")
-View(Data_1_Severity)
+
 library(dplyr)
 library(tidyr)
 colnames(Data_1_Severity) <- c("Treatment","Block","Week1","Week3","Week5","Week7","Week9", "Total")
@@ -15,6 +15,4 @@ data_long <- data1 %>%
   select(where(~ all(!is.na(.))))
 
 data_long$Samples <- rep(1:25, times = 5)
-
-View(data_long)
 

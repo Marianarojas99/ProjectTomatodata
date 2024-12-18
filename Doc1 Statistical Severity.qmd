@@ -92,7 +92,6 @@ medias_df <- data_long %>%
 Creating a line graph: The overall goal of this visualization is to illustrate how the severity of pathogen suppression varies over time for each treatment, allowing for easy comparison and interpretation of the effects of different treatments throughout the study period.
 
 ```{r}
-
 last_week_df <- medias_df %>%
   group_by(Treatment) %>%
   filter(Weeks == max(Weeks)) %>%
@@ -101,16 +100,18 @@ last_week_df <- medias_df %>%
 medias_df <- medias_df %>%
   left_join(letters_df, by = "Treatment")
 
+last_week_df <- last_week_df %>%
+  left_join(letters_df, by = "Treatment")
+
 ggplot(medias_df, aes(x = Weeks, y = Severity_mean, color = Treatment, group = Treatment)) +
   geom_line(size = 1) +     
   geom_point(size = 3, alpha = 0.5) +     
   geom_text(data = last_week_df, aes(x = Weeks, y = Severity_mean, label = Letters), 
-            inherit.aes = FALSE,  
-            hjust = -0.2, vjust = 0, size = 5) +  
+            inherit.aes = FALSE,  # 
+            hjust = -0.2, vjust = 0, size = 5) +  # 
   labs(title = "Severity of Pathogen Suppression Over Time",
        x = "Weeks",
        y = "Mean Severity") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
 ```
