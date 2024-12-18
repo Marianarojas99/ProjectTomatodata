@@ -4,6 +4,10 @@ format: html
 editor: visual
 ---
 
+```{r}
+knitr::opts_chunk$set(fig.path = 'Graphs Replication Results/')
+```
+
 # Introduction
 
 The data collection started from day 45, where transplantation was carried out. Then every two weeks biomarkers and non-enzymatic variables were gathered (60, 75, 90, 105 days).
@@ -370,7 +374,7 @@ for (dia in Days) {
 
 **Results of Test, Transformation, Post-Hoc**
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 print(results_table_MDA)
@@ -378,7 +382,7 @@ print(results_table_MDA)
 
 **Significance Letters**
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 for (dia in Days) {
@@ -390,7 +394,7 @@ for (dia in Days) {
 
 **Graphics**
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Summarize MDA data by Day and Treatment
@@ -565,7 +569,7 @@ for (dia in Days) {
 
 **Result of Test, Transformation, and Post-Hoc**
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 print(results_table_Superoxide)
@@ -574,7 +578,7 @@ print(results_table_Superoxide)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 for (dia in Days) {
@@ -586,7 +590,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for Superoxide (same as with H202)
@@ -762,7 +766,7 @@ for (dia in Days) {
 
 Result of Test, Transformation, and Post-Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print results table
@@ -771,7 +775,7 @@ print(results_table_Phenols)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print post-hoc letters for each day
@@ -784,7 +788,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for Phenols
@@ -961,7 +965,7 @@ for (dia in Days) {
 
 Results of Test, Transformation, and Post-Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print the results table
@@ -970,7 +974,7 @@ print(results_table_Flavonoids)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print post-hoc letters for each day
@@ -983,7 +987,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for Flavonoids
@@ -1160,7 +1164,7 @@ for (dia in Days) {
 
 Results of Test, Transformation, and Post-Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print the results table
@@ -1169,7 +1173,7 @@ print(results_table_VitaminC)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print post-hoc letters for each day
@@ -1182,7 +1186,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for Vitamin C
@@ -1357,7 +1361,7 @@ for (dia in Days) {
 
 Results of Test, Transformation, and Post-Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print the results table for Chlorophyll A
@@ -1366,7 +1370,7 @@ print(results_table_Chlorophyll_A)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 for (dia in Days) {
@@ -1378,7 +1382,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for Chlorophyll A
@@ -1554,7 +1558,7 @@ for (dia in Days) {
 
 Results of Test, Transformation, and Post-Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print results table
@@ -1563,7 +1567,7 @@ print(results_table_ChlorophyllB)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print post-hoc letters for each day
@@ -1576,7 +1580,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for Chlorophyll B
@@ -1752,7 +1756,7 @@ for (dia in Days) {
 
 Results of Test, Transformation, and Post-Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print results table
@@ -1761,7 +1765,7 @@ print(results_table_TotalChlorophyll)
 
 Significane Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print post-hoc letters for each day
@@ -1774,7 +1778,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for Total chlorophyll
@@ -1951,7 +1955,7 @@ for (dia in Days) {
 
 Results of Test, Transformation, and Post-Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print the results table
@@ -1960,7 +1964,7 @@ print(results_table_Bcarotene)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print post-hoc letters for each day
@@ -1973,7 +1977,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for B carotene
@@ -2150,7 +2154,7 @@ for (dia in Days) {
 
 Results of Test, Transformation, and Post-Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print the results table
@@ -2159,7 +2163,7 @@ print(results_table_Proteins)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print post-hoc letters for each day
@@ -2172,7 +2176,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for Proteins
@@ -2349,7 +2353,7 @@ for (dia in Days) {
 
 Result of Test, Transformation, and Post Hoc
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print the results table
@@ -2358,7 +2362,7 @@ print(results_table_YellowCarotenoids)
 
 Significance Letters
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Print post-hoc letters for each day
@@ -2371,7 +2375,7 @@ for (dia in Days) {
 
 Graphics
 
----
+------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
 # Create summary table for yellow carotenoids
