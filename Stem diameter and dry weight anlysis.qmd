@@ -1,0 +1,189 @@
+---
+title: "Stem diameter and dry anlysis"
+format: html
+editor: visual
+---
+
+## Introduction
+
+This report analyzes plant growth parameters, including stem diameter, aerial dry weight, and root dry weight. Statistical analysis methods are used to evaluate the effects of different treatments on these growth parameters.
+
+# Load required packages
+
+```{r}
+library(readxl)
+
+library(dplyr)
+
+library(agricolae)
+```
+
+# Read data
+
+```{r}
+
+Data_4_SDiamDryWeight <- read_excel("DATA/tomato-clean.xlsx", sheet = "plants")
+```
+
+# Select required columns
+
+```{r}
+Dfprov4_filtered <- Data_4_SDiamDryWeight %>%
+  select(Treatment, `Stem diameter`, `Aereal dry weight`, `Root dry weight`)
+```
+
+select(Treatment, Stem diameter, Aereal dry weight, Root dry weight)
+
+# Convert Treatment to factor
+
+```{r}
+Dfprov4_filtered$Treatment <- as.factor(Dfprov4_filtered$Treatment)
+```
+
+## Analysis of Variance (ANOVA)
+
+### Stem Diameter Analysis
+
+```{r}
+anova_stem <- aov(`Stem diameter` ~ Treatment, data = Dfprov4_filtered)
+print("ANOVA for Stem Diameter:")
+print(summary(anova_stem))
+```
+
+### Aerial Dry Weight Analysis
+
+```{r}
+anova_aereal <- aov(`Aereal dry weight` ~ Treatment, data = Dfprov4_filtered)
+print("ANOVA for Aereal Dry Weight:")
+print(summary(anova_aereal))
+```
+
+### Root Dry Weight Analysis
+
+```{r}
+anova_root <- aov(`Root dry weight` ~ Treatment, data = Dfprov4_filtered)
+print("ANOVA for Root Dry Weight:")
+print(summary(anova_root))
+```
+
+## Fisher LSD Test
+
+### LSD Analysis for Stem Diameter
+
+```{r}
+LSD_stem <- LSD.test(anova_stem, "Treatment", p.adj="none")
+print("Fisher LSD result - Stem Diameter:")
+print(LSD_stem)
+```
+
+### LSD Analysis for Aerial Dry Weight
+
+```{r}
+LSD_aereal <- LSD.test(anova_aereal, "Treatment", p.adj="none")
+print("Fisher LSD result - Aereal Dry Weight:")
+print(LSD_aereal)
+```
+
+### LSD Analysis for Root Dry Weight
+
+```{r}
+LSD_root <- LSD.test(anova_root, "Treatment", p.adj="none")
+print("Fisher LSD result - Root Dry Weight:")
+print(LSD_root)
+```
+
+### Visualize results
+
+```{r}
+par(mfrow=c(2,2), mar=c(4,4,3,1))
+plot(LSD_stem)
+plot(LSD_aereal)
+plot(LSD_root)
+```
+
+## Tukey HSD Test
+
+### Tukey HSD Analysis for Stem Diameter
+
+```{r}
+tukey_stem <- TukeyHSD(anova_stem)
+print("Tukey HSD result - Stem Diameter:")
+print(tukey_stem)
+```
+
+### Tukey HSD Analysis for Aerial Dry Weight
+
+```{r}
+tukey_aereal <- TukeyHSD(anova_aereal)
+print("Tukey HSD result - Aereal Dry Weight:")
+print(tukey_aereal)
+```
+
+### Tukey HSD Analysis for Root Dry Weight
+
+```{r}
+tukey_root <- TukeyHSD(anova_root)
+print("Tukey HSD result - Root Dry Weight:")
+print(tukey_root)
+```
+
+### Visualize results
+
+```{r}
+par(mfrow=c(2,2), mar=c(4,4,3,1))
+plot(tukey_stem)
+title("Stem Diameter - Tukey HSD")
+plot(tukey_aereal)
+title("Aereal Dry Weight - Tukey HSD")
+plot(tukey_root)
+title("Root Dry Weight - Tukey HSD")
+```
+
+## Normality Test
+
+### Shapiro-Wilk Test Results
+
+```{r}
+shapiro_stem <- shapiro.test(Dfprov4_filtered$`Stem diameter`)
+print("Normality Test - Stem Diameter:")
+print(shapiro_stem)
+
+shapiro_aereal <- shapiro.test(Dfprov4_filtered$`Aereal dry weight`)
+print("Normality Test - Aereal Dry Weight:")
+print(shapiro_aereal)
+
+shapiro_root <- shapiro.test(Dfprov4_filtered$`Root dry weight`)
+print("Normality Test - Root Dry Weight:")
+print(shapiro_root)
+```
+
+### Q-Q Plot Analysis
+
+```{r}
+par(mfrow=c(2,2), mar=c(4,4,3,1))
+qqnorm(Dfprov4_filtered$`Stem diameter`, main="Stem Diameter Q-Q Plot")
+qqline(Dfprov4_filtered$`Stem diameter`)
+qqnorm(Dfprov4_filtered$`Aereal dry weight`, main="Aereal Dry Weight Q-Q Plot")
+qqline(Dfprov4_filtered$`Aereal dry weight`)
+qqnorm(Dfprov4_filtered$`Root dry weight`, main="Root Dry Weight Q-Q Plot")
+qqline(Dfprov4_filtered$`Root dry weight`)
+```
+
+# Conclusion
+
+Based on the above analysis:
+
+1.  The ANOVA results show: Treatment had a significant effect on stem diameter, which differed significantly between treatment groups.
+2.  The LSD test indicates:
+    1.  **Treatment EXAm** shows the highest stem diameter and is significantly better than Infes and Infes+Captan.
+    2.  The **Control group** performs well and is comparable to EXAm.
+    3.  **Infes** has the lowest stem diameter, indicating it has the most detrimental effect on stem growth.
+    4.  The combination treatment **Infes+EXAm** performs better than **Infes+Captan**, suggesting EXAm may be more effective than Captan in mitigating the negative effects of infestation.
+3.  The Tukey HSD analysis further confirms:
+    1.  **EXAm** consistently outperforms **Infes** and **Infes+Captan**, showing its significant positive effect on stem diameter.
+    2.  The **Control group** is significantly better than **Infes** and may outperform **Infes+Captan** with weak evidence.
+    3.  **Infes+EXAm** shows potential improvement compared to **Infes**, but the difference is not statistically conclusive.
+    4.  **Infes+Captan** does not show a significant advantage over **Infes** alone.
+4.  The normality tests demonstrate:
+    1.  **Stem Diameter** and **Root Dry Weight** can be considered normally distributed, so ANOVA is appropriate for these variables.
+    2.  **Aerial Dry Weight** does not meet the assumption of normality, so the results of ANOVA may not be entirely reliable for this variable.
