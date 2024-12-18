@@ -1,0 +1,1359 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.33">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Analysis over time</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Doc5 Statistical Repeated Measurements_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Doc5 Statistical Repeated Measurements_files/libs/quarto-html/quarto.js"></script>
+<script src="Doc5 Statistical Repeated Measurements_files/libs/quarto-html/popper.min.js"></script>
+<script src="Doc5 Statistical Repeated Measurements_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Doc5 Statistical Repeated Measurements_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Doc5 Statistical Repeated Measurements_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Doc5 Statistical Repeated Measurements_files/libs/quarto-html/quarto-syntax-highlighting-07ba0ad10f5680c660e360ac31d2f3b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Doc5 Statistical Repeated Measurements_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Doc5 Statistical Repeated Measurements_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Doc5 Statistical Repeated Measurements_files/libs/bootstrap/bootstrap-b8d30c7eeda119d43de224048e70de8f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Analysis over time</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Due to the bio marker assessments and non-enzymatic variables were taken over time, a repeated measures analysis can be performed.</p>
+<p><strong>Required libraries</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(emmeans)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggsignif)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(multcompView)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(multcomp)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rstatix)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nlme)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Call the data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"DATA/tomato-clean.xlsx"</span>, <span class="at">sheet =</span> <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="h2o2" class="level2">
+<h2 class="anchored" data-anchor-id="h2o2">1. H<sub>2</sub>O<sub>2</sub></h2>
+<section id="statistical-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis">Statistical analysis</h3>
+</section>
+<section id="linear-mixed-model" class="level3">
+<h3 class="anchored" data-anchor-id="linear-mixed-model">Linear mixed model</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>?lmer</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lmer</span>(H202 <span class="sc">~</span> Day <span class="sc">*</span> Treatment <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Block), <span class="at">data =</span> df)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+lmerModLmerTest]
+Formula: H202 ~ Day * Treatment + (1 | Block)
+   Data: df
+
+REML criterion at convergence: 246.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-1.9724 -0.7246 -0.1565  0.6752  2.8009 
+
+Random effects:
+ Groups   Name        Variance Std.Dev.
+ Block    (Intercept) 0.0000   0.0000  
+ Residual             0.2896   0.5382  
+Number of obs: 125, groups:  Block, 5
+
+Fixed effects:
+                            Estimate Std. Error         df t value Pr(&gt;|t|)    
+(Intercept)                 2.643345   0.395469 115.000000   6.684 8.75e-10 ***
+Day                        -0.022225   0.005074 115.000000  -4.380 2.63e-05 ***
+TreatmentEXAm              -1.089112   0.559277 115.000000  -1.947   0.0539 .  
+TreatmentInfes             -0.393035   0.559277 115.000000  -0.703   0.4836    
+TreatmentInfes+Captan      -0.438713   0.559277 115.000000  -0.784   0.4344    
+TreatmentInfes+EXAm         0.428827   0.559277 115.000000   0.767   0.4448    
+Day:TreatmentEXAm           0.012249   0.007176 115.000000   1.707   0.0905 .  
+Day:TreatmentInfes          0.011476   0.007176 115.000000   1.599   0.1125    
+Day:TreatmentInfes+Captan   0.003750   0.007176 115.000000   0.523   0.6023    
+Day:TreatmentInfes+EXAm    -0.003091   0.007176 115.000000  -0.431   0.6675    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Correlation of Fixed Effects:
+            (Intr) Day    TrtEXA TrtmnI TrtI+C TI+EXA D:TEXA Dy:TrI D:TI+C
+Day         -0.962                                                        
+TretmntEXAm -0.707  0.680                                                 
+TretmntInfs -0.707  0.680  0.500                                          
+TrtmntInf+C -0.707  0.680  0.500  0.500                                   
+TrtmntI+EXA -0.707  0.680  0.500  0.500  0.500                            
+Dy:TrtmnEXA  0.680 -0.707 -0.962 -0.481 -0.481 -0.481                     
+Dy:TrtmntIn  0.680 -0.707 -0.481 -0.962 -0.481 -0.481  0.500              
+Dy:TrtmnI+C  0.680 -0.707 -0.481 -0.481 -0.962 -0.481  0.500  0.500       
+Dy:TrtI+EXA  0.680 -0.707 -0.481 -0.481 -0.481 -0.962  0.500  0.500  0.500
+optimizer (nloptwrap) convergence code: 0 (OK)
+boundary (singular) fit: see help('isSingular')</code></pre>
+</div>
+</div>
+<p><strong>Graphic</strong></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>predicted <span class="ot">&lt;-</span> <span class="fu">predict</span>(model)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> Day, <span class="at">y =</span> H202, <span class="at">color =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> predicted), <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Effect of the treatment"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Day"</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"H202"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+ℹ Please use `linewidth` instead.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="repeated-measures" class="level2">
+<h2 class="anchored" data-anchor-id="repeated-measures">Repeated measures</h2>
+<p>A repeated measures analysis is a statistical method used when the same subjects (or experimental units) are measured multiple times under different conditions, over time, or across various levels of a factor. It accounts for the fact that repeated observations on the same subject are not independent.</p>
+<ul>
+<li><p><strong>Fixed Effects</strong>:</p></li>
+<li><p><strong><code>H202 ~ Treatment * Day</code></strong> includes main effects for <code>Treatment</code> and <code>Day</code> and their interaction.</p></li>
+<li><p><strong>Random Effects</strong>:</p>
+<ul>
+<li><p><strong><code>random = ~1 | Block/Samples</code></strong> specifies a hierarchical random-effects structure:</p>
+<ul>
+<li><p><strong><code>~1</code></strong>: Indicates random intercepts for each grouping level.</p></li>
+<li><p><strong><code>Block/Samples</code></strong>: Models nested random effects:</p>
+<ul>
+<li><strong><code>Block</code></strong>: Random intercepts for each block.</li>
+</ul></li>
+</ul></li>
+<li><p><strong><code>Samples</code></strong>: Random intercepts nested within <code>Block</code> (e.g., multiple samples taken from each block).</p>
+<p>Once the pairwise was done, the tukey changed to sidak .</p>
+<pre><code>Note: adjust = "tukey" was changed to "sidak" because "tukey" is only appropriate for one set of pairwise comparisons</code></pre></li>
+</ul></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>modelo_repet <span class="ot">&lt;-</span> <span class="fu">lme</span>(H202 <span class="sc">~</span> Treatment <span class="sc">*</span> Day, <span class="at">random =</span> <span class="sc">~</span><span class="dv">1</span> <span class="sc">|</span> Block<span class="sc">/</span>Samples, <span class="at">data =</span> df)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>modelo_repet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -123.2925
+  Fixed: H202 ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+              2.643344560              -1.089111600              -0.393034640 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+             -0.438712560               0.428827040              -0.022225376 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+              0.012248955               0.011476293               0.003749680 
+  TreatmentInfes+EXAm:Day 
+             -0.003090645 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev: 2.42596e-05
+
+ Formula: ~1 | Samples %in% Block
+         (Intercept)  Residual
+StdDev: 1.305336e-05 0.5381648
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>emm_treatments <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(modelo_repet, <span class="sc">~</span> Treatment)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>comparissons <span class="ot">&lt;-</span> <span class="fu">cld</span>(emm_treatments, <span class="at">alpha=</span><span class="fl">0.05</span>, <span class="at">Letters=</span>letters, <span class="at">adjust=</span><span class="st">"tukey"</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>Lettersabc <span class="ot">&lt;-</span> comparissons<span class="sc">$</span>.group</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>Lettersabc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a " " a " " a " " ab" "  b"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>emm_data <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(comparissons)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>letters_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Treatment =</span> comparissons<span class="sc">$</span>Treatment,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                         <span class="at">Letters =</span> comparissons<span class="sc">$</span>.group)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>medias_df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Treatment, Day) <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">H202_mean =</span> <span class="fu">mean</span>(H202), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>lastday <span class="ot">&lt;-</span> medias_df <span class="sc">%&gt;%</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Day <span class="sc">==</span> <span class="fu">max</span>(medias_df<span class="sc">$</span>Day)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(letters_df, <span class="at">by =</span> <span class="st">"Treatment"</span>) </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(medias_df, <span class="fu">aes</span>(<span class="at">x =</span> Day, <span class="at">y =</span> H202_mean, <span class="at">group =</span> Treatment, <span class="at">color =</span> Treatment)) <span class="sc">+</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span>  </span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> lastday, </span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">label =</span> Letters, <span class="at">x =</span> Day <span class="sc">+</span> <span class="dv">1</span>, <span class="at">y =</span> H202_mean), </span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>            <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>) <span class="sc">+</span>  </span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Days"</span>, </span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"H2O2"</span>, </span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Treatment"</span>) <span class="sc">+</span></span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_discrete</span>(<span class="at">name =</span> <span class="st">"Treatment"</span>) <span class="sc">+</span> </span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">14</span>),</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="mda" class="level2">
+<h2 class="anchored" data-anchor-id="mda">2. MDA</h2>
+<section id="statistical-analysis-1" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-1">Statistical analysis</h3>
+<p>Because the measurements are repeated over time, a repeated measures analysis will be performed for all variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>MDA[<span class="fu">is.na</span>(df<span class="sc">$</span>MDA)] <span class="ot">&lt;-</span> <span class="fu">mean</span>(df<span class="sc">$</span>MDA, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>modelo_repet <span class="ot">&lt;-</span> <span class="fu">lme</span>(MDA <span class="sc">~</span> Treatment <span class="sc">*</span> Day, <span class="at">random =</span> <span class="sc">~</span><span class="dv">1</span> <span class="sc">|</span> Block<span class="sc">/</span>Samples, <span class="at">data =</span> df)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>modelo_repet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -530.2489
+  Fixed: MDA ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+              51.75065806              -16.67472516                0.61931355 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+             -13.86039176              -17.39920516                0.18365178 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+               0.10399794               -0.04128757                0.23310012 
+  TreatmentInfes+EXAm:Day 
+               0.19241566 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev:    5.052473
+
+ Formula: ~1 | Samples %in% Block
+        (Intercept) Residual
+StdDev: 0.004385968 18.18255
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>emm_treatmentsmda <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(modelo_repet, <span class="sc">~</span> Treatment)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>comparisonsmda <span class="ot">&lt;-</span> <span class="fu">cld</span>(emm_treatmentsmda, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">Letters =</span> letters, <span class="at">adjust =</span> <span class="st">"tukey"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Extraer las letras significativas</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>Lettersabcmda <span class="ot">&lt;-</span> comparisonsmda<span class="sc">$</span>.group</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Mostrar las letras significativas</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>Lettersabcmda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a" " a" " a" " a" " a"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="superoxide-oxide" class="level2">
+<h2 class="anchored" data-anchor-id="superoxide-oxide">3. Superoxide oxide</h2>
+<section id="statistical-analysis-2" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-2">Statistical analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -96.98574
+  Fixed: Superoxide ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+              3.856154071              -0.922353979               1.830909523 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+              1.773098840               0.465816118              -0.005931741 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+              0.008294921              -0.015035536              -0.018382052 
+  TreatmentInfes+EXAm:Day 
+             -0.006597872 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev: 8.02031e-06
+
+ Formula: ~1 | Samples %in% Block
+         (Intercept)  Residual
+StdDev: 6.630601e-06 0.4281229
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a " " a " " a " "  b" "  b"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="phenols" class="level2">
+<h2 class="anchored" data-anchor-id="phenols">4. Phenols</h2>
+<section id="statistical-analysis-3" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-3">Statistical analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -206.7138
+  Fixed: Phenols ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+              5.860301432              -1.177453368              -3.286518192 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+             -2.857081680              -1.313138520               0.003077395 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+              0.024875611               0.026950522               0.022893955 
+  TreatmentInfes+EXAm:Day 
+              0.020446027 
+
+Random effects:
+ Formula: ~1 | Block
+         (Intercept)
+StdDev: 4.480351e-05
+
+ Formula: ~1 | Samples %in% Block
+         (Intercept) Residual
+StdDev: 3.941827e-05 1.111613
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a " " a " "  b" "  b" "  b"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="flavonoids" class="level2">
+<h2 class="anchored" data-anchor-id="flavonoids">5. Flavonoids</h2>
+<section id="statistical-analysis-4" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-4">Statistical Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -751.6328
+  Fixed: Flavonoids ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+              620.2027360               277.6414368                 7.7575936 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+             -215.1076640                42.1227872                 1.6035514 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+               -2.3887712                -2.4975667                 0.7300337 
+  TreatmentInfes+EXAm:Day 
+               -0.7741826 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev:    16.05711
+
+ Formula: ~1 | Samples %in% Block
+        (Intercept) Residual
+StdDev: 0.009099047 126.2586
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a  " " a  " "  b " "  bc" "   c"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="vitamin-c" class="level2">
+<h2 class="anchored" data-anchor-id="vitamin-c">6. Vitamin C</h2>
+<section id="statistical-analysis-5" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-5">Statistical Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -127.7426
+  Fixed: Vitamin_C ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+              5.165428720               0.406298400               0.607153980 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+              0.688741320               0.159242760              -0.000262128 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+             -0.008737600              -0.005133340              -0.008737600 
+  TreatmentInfes+EXAm:Day 
+             -0.002271776 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev:   0.1568749
+
+ Formula: ~1 | Samples %in% Block
+        (Intercept)  Residual
+StdDev:   0.0946856 0.5426989
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a" " a" " a" " a" " a"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="chlorophyll-a" class="level2">
+<h2 class="anchored" data-anchor-id="chlorophyll-a">7. Chlorophyll A</h2>
+<section id="statistical-analysis-6" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-6">Statistical Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -365.3561
+  Fixed: Chlorophyll_A ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+               3.32431294               -0.84835550                6.77797802 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+              -2.58084809                7.98850925                0.16383522 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+              -0.02183602               -0.12818019               -0.05305382 
+  TreatmentInfes+EXAm:Day 
+              -0.12348006 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev: 0.001725402
+
+ Formula: ~1 | Samples %in% Block
+         (Intercept) Residual
+StdDev: 3.795928e-05 4.416333
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a " " ab" "  b" "  b" "  b"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="chlorophyll-b" class="level2">
+<h2 class="anchored" data-anchor-id="chlorophyll-b">8. Chlorophyll B</h2>
+<section id="statistical-analysis-7" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-7">Statistical Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -272.3038
+  Fixed: Chlorophyll_B ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+               0.32594000                0.03431216                2.19528688 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+              -0.95702288                2.36538144                0.06613014 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+              -0.01367169               -0.04442055               -0.02006521 
+  TreatmentInfes+EXAm:Day 
+              -0.03802208 
+
+Random effects:
+ Formula: ~1 | Block
+         (Intercept)
+StdDev: 5.207766e-05
+
+ Formula: ~1 | Samples %in% Block
+        (Intercept) Residual
+StdDev: 4.49196e-05 1.966312
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a " " ab" " ab" "  b" "  b"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="total-chlorophyll" class="level2">
+<h2 class="anchored" data-anchor-id="total-chlorophyll">9. Total Chlorophyll</h2>
+<section id="statistical-analysis-8" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-8">Statistical Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -406.4743
+  Fixed: Total_chlorophyll ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+               3.65025294               -0.81404334                8.97326490 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+              -3.53787097               10.35389069                0.22996537 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+              -0.03550771               -0.17260075               -0.07311903 
+  TreatmentInfes+EXAm:Day 
+              -0.16150214 
+
+Random effects:
+ Formula: ~1 | Block
+         (Intercept)
+StdDev: 0.0004482302
+
+ Formula: ~1 | Samples %in% Block
+         (Intercept) Residual
+StdDev: 0.0001972563 6.314571
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a " " ab" "  b" "  b" "  b"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="b-carotene" class="level2">
+<h2 class="anchored" data-anchor-id="b-carotene">10. B Carotene</h2>
+<section id="statistical-analysis-9" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-9">Statistical Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -277.8905
+  Fixed: B_carotene ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+               3.62706432               -0.14305984                2.93200384 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+              -0.82452442                5.35293248                0.06141619 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+              -0.01392260               -0.05590272               -0.03000200 
+  TreatmentInfes+EXAm:Day 
+              -0.07274594 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev:   0.1764539
+
+ Formula: ~1 | Samples %in% Block
+         (Intercept) Residual
+StdDev: 0.0001191793 2.058147
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a " "  b" "  b" "  b" "  b"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="proteins" class="level2">
+<h2 class="anchored" data-anchor-id="proteins">11. Proteins</h2>
+<section id="statistical-analysis-10" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-10">Statistical Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -713.5765
+  Fixed: Proteins ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+               244.181612                119.387771                184.554553 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+               154.970672                197.036387                  3.030957 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+                -1.384451                 -3.174482                 -2.889045 
+  TreatmentInfes+EXAm:Day 
+                -2.403640 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev: 0.003759672
+
+ Formula: ~1 | Samples %in% Block
+        (Intercept) Residual
+StdDev: 0.003922364 91.22359
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a" " a" " a" " a" " a"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="yellow-carotenoids" class="level2">
+<h2 class="anchored" data-anchor-id="yellow-carotenoids">12. Yellow Carotenoids</h2>
+<section id="statistical-analysis-11" class="level3">
+<h3 class="anchored" data-anchor-id="statistical-analysis-11">Statistical Analysis</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed-effects model fit by REML
+  Data: df 
+  Log-restricted-likelihood: -610.3757
+  Fixed: yellow_carotenoids ~ Treatment * Day 
+              (Intercept)             TreatmentEXAm            TreatmentInfes 
+               22.0775483                11.6024805                36.1043538 
+    TreatmentInfes+Captan       TreatmentInfes+EXAm                       Day 
+               31.3487759                58.6745179                 0.9813001 
+        TreatmentEXAm:Day        TreatmentInfes:Day TreatmentInfes+Captan:Day 
+               -0.3067488                -0.6896086                -0.7946918 
+  TreatmentInfes+EXAm:Day 
+               -0.8529701 
+
+Random effects:
+ Formula: ~1 | Block
+        (Intercept)
+StdDev: 0.001319675
+
+ Formula: ~1 | Samples %in% Block
+        (Intercept) Residual
+StdDev: 0.002245923 37.18537
+
+Number of Observations: 125
+Number of Groups: 
+             Block Samples %in% Block 
+                 5                 25 </code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>NOTE: Results may be misleading due to involvement in interactions</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Note: adjust = "tukey" was changed to "sidak"
+because "tukey" is only appropriate for one set of pairwise comparisons</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] " a" " a" " a" " a" " a"</code></pre>
+</div>
+</div>
+<p>Significance:</p>
+<hr>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Doc5-Statistical-Repeated-Measurements_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
