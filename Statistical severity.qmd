@@ -105,12 +105,12 @@ ggplot(medias_df, aes(x = Weeks, y = Severity_mean, color = Treatment, group = T
   geom_line(size = 1) +     
   geom_point(size = 3, alpha = 0.5) +     
   geom_text(data = last_week_df, aes(x = Weeks, y = Severity_mean, label = Letters), 
-            inherit.aes = FALSE,  # No heredar las estéticas de ggplot
-            hjust = -0.2, vjust = 0, size = 5) +  # Solo añadir las letras al final de las curvas
+            inherit.aes = FALSE,  
+            hjust = -0.2, vjust = 0, size = 5) +  
   labs(title = "Severity of Pathogen Suppression Over Time",
        x = "Weeks",
        y = "Mean Severity") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
