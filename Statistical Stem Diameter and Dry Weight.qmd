@@ -1,0 +1,350 @@
+---
+title: "Statistical Analysis of Stem Diameter and Dry Weight (Aerial and Root)"
+format: html
+editor: visual
+---
+
+## Introduction
+
+This analysis examines three key plant growth parameters:
+
+1.  Stem diameter
+
+2.  Aerial dry weight
+
+3.  Root dry weight
+
+Moreover, the data is divided into five blocks and five treatments as follows:
+
+**Treatment 1** : "Control" - Without treatment application (extract or fungicide) and without pathogen inoculation/infestation.
+
+**Treatment 2** : "EXAm" - With treatment application (extract or fungicide) but without pathogen inoculation/infestation.
+
+**Treatment 3** : "Infes" - Without treatment application (extract or fungicide) but with pathogen inoculation/infestation.
+
+**Treatment 4** : "Infes + EXAm" - With treatment application (extract) and pathogen inoculation/infestation.
+
+**Treatment 5** : "Infes + Captan" - With treatment application (fungicide) and pathogen inoculation/infestation.
+
+### **Load the Required Libraries**
+
+```{r setup, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(readxl)
+library(agricolae)
+library(multcompView)
+library(dplyr)
+```
+
+### Call or Import the Data
+
+```{r}
+df <- read_excel("DATA/tomato-clean.xlsx", sheet = "plants")
+```
+
+**Visualize the Data**
+
+```{r}
+knitr::kable(df, caption = "Data of Stem Diameter and Dry Weight (Aerial and Root)")
+```
+
+## Statistical Analysis
+
+### 1. Stem Diameter
+
+**Analysis of Variance (ANOVA)**
+
+------------------------------------------------------------------------
+
+```{r}
+stem_aov <- aov(`Stem diameter` ~ Treatment * Block, data = df)
+summary(stem_aov)
+```
+
+**Interpretation:**
+
+------------------------------------------------------------------------
+
+**Treatments:** The treatment factor is highly significant (p = 5.23e-05), indicating that the treatment has a clear and strong effect on the stem diameter. The variability in the response is primarily explained by the treatment, and there are clear differences between the groups.
+
+**Blocks:** The block factor is also significant (p = 0.00389), suggesting that blocks contribute to explaining the variability in the outcome. This means that grouping observations into blocks has a meaningful impact on the results.
+
+**Interaction:** The interaction between treatment and block is not significant (p = 0.27561), indicating that the effect of treatments is consistent across blocks. There is no evidence that the treatment effect differs depending on the block.
+
+**Normality**
+
+------------------------------------------------------------------------
+
+```{r}
+res_stem <- residuals(stem_aov)
+shapiro.test(res_stem)
+```
+
+**Interpretation:**
+
+------------------------------------------------------------------------
+
+Through the Shapiro-Wilk test, the dataset was evaluated if it follows a normal distribution. In this case, the p-value (0.3615) is high, indicating that the test did not find significant deviations from normality. Therefore, the data is normally distributed.
+
+**Visualize the behavior of the data**
+
+------------------------------------------------------------------------
+
+```{r}
+par(mfrow=c(1,2))
+qqnorm(res_stem, main = "Q-Q Plot - Stem Diameter")
+qqline(res_stem, col = "red", lwd = 2)
+hist(res_stem,
+main = "Residuals - Stem Diameter",
+xlab = "Residuals",
+col = "lightblue",
+border = "black",
+breaks = 20)
+```
+
+**Post-Hoc Test Tukey's HSD**
+
+------------------------------------------------------------------------
+
+Since there are significant differences on the ANOVA, post-hoc test such as Tukey's HSD test were performed.
+
+```{r, warning=FALSE}
+# Perform Tukey HSD post hoc test
+tukey_stem <- TukeyHSD(stem_aov, "Treatment")
+
+# Extract p-values from the Tukey HSD test
+tukey_pvalues_stem <- tukey_stem$Treatment[, "p adj"]
+
+# Generate significance letters using multcompView
+library(multcompView)
+tukey_letters_stem <- multcompLetters(tukey_pvalues_stem)$Letters
+
+# Print the significance letters
+tukey_letters_stem
+```
+
+**Graphics**
+
+------------------------------------------------------------------------
+
+```{r}
+# Summarize data: Calculate mean, standard deviation, and standard error for each treatment
+df_summary <- df %>%
+  group_by(Treatment) %>%
+  summarise(
+    mean_stem_diameter = mean(`Stem diameter`, na.rm = TRUE),
+    sd_stem_diameter = sd(`Stem diameter`, na.rm = TRUE),
+    se_stem_diameter = sd_stem_diameter / sqrt(n()),  # Standard error
+    .groups = 'drop'
+  )
+
+# Add Tukey letters to the summary table
+df_summary$letters <- tukey_letters_stem
+
+# Create the boxplot with error bars and Tukey letters
+ggplot(df, aes(x = Treatment, y = `Stem diameter`, fill = Treatment)) +
+  geom_boxplot(outlier.color = "red", outlier.shape = 16, outlier.size = 2, color = "black") +
+  geom_errorbar(
+    data = df_summary,
+    aes(x = Treatment, ymin = mean_stem_diameter - se_stem_diameter, ymax = mean_stem_diameter + se_stem_diameter),
+    width = 0.25, inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = df_summary,
+    aes(x = Treatment, y = max(mean_stem_diameter + se_stem_diameter) + 0.2, label = letters),
+    size = 5, fontface = "bold", color = "black", inherit.aes = FALSE
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Effect of Treatment on Stem Diameter",
+    x = "Treatment",
+    y = "Stem Diameter (mm)"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "none"  # Remove legend
+  )
+
+```
+
+**Interpretation:**
+
+------------------------------------------------------------------------
+
+Treatments sharing the same letter are not significantly different.
+
+-   **Control (a):** The control has a mean stem diameter of 20 mm and shows no significant difference from other treatments with the same letter.
+
+-   **EXAm (b):** The EXAm treatment (extract without pathogen) has the largest stem diameter (\~22.5 mm) and differs significantly from "Infes", "Infes + Captan", and partially overlaps with "Control" and "Infes + EXAm".
+
+-   **Infes (bc):** The Infes treatment (pathogen alone) has the smallest stem diameter (\~17 mm), significantly lower than EXAm.
+
+-   **Infes + Captan (cd):** The "Infes + Captan" treatment (fungicide + pathogen) shows moderate stem diameter (\~18-19 mm) and overlaps with both "Control" and "EXAm".
+
+-   **Infes + EXAm (ad):** The "Infes + EXAm" treatment (extract + pathogen) has an intermediate stem diameter (\~19-20 mm), overlapping with both the Control and Infes + Captan treatments.
+
+### 2. Aerial Dry Weight
+
+**Analysis of Variance (ANOVA)**
+
+```{r}
+aerial_aov <- aov(`Aereal dry weight` ~ Treatment* Block, data = df)
+summary(aerial_aov)
+```
+
+**Interpretation:**
+
+------------------------------------------------------------------------
+
+1.  **Treatment (Factor 1)**: The F-value for the treatment factor is 0.424, with a p-value of 0.789, indicating no significant effect of the different treatments on the response variable.
+
+2.  **Block (Factor 2)**: The block factor shows an F-value of 4.056 and a p-value of 0.0623, which is marginally significant at the 0.1 level, suggesting that blocks may have a small influence on the response variable.
+
+3.  **Interaction**: The interaction between treatment and block has an F-value of 0.787 and a p-value of 0.5511, indicating no significant interaction between the factors.
+
+4.  **Residuals**: The residuals have an F-value of 42886, which serves as the baseline for comparison. No significant effects were observed for treatment and interaction terms.
+
+In general, the results indicate that neither treatment nor the interaction between treatment and block significantly affects the outcome.
+
+**Normality**
+
+------------------------------------------------------------------------
+
+```{r}
+resAerealWeight <- residuals(aerial_aov) 
+shapiro.test(resAerealWeight)
+```
+
+**Interpretation**
+
+------------------------------------------------------------------------
+
+The Shapiro-Wilk normality test results show a W statistic of 0.956 and a p-value of 0.3406. Since the p-value is greater than the significance level of 0.05, this indicates that the data for Aerial dry weight follows a normal distribution.
+
+**Visualize the behavior of the data**
+
+------------------------------------------------------------------------
+
+```{r}
+par(mfrow=c(1,2))
+
+# Q-Q plot for residuals
+qqnorm(resAerealWeight, main = "Q-Q Plot - Aereal Dry Weight")
+qqline(resAerealWeight, col = "red", lwd = 2)
+
+# Histogram of residuals
+hist(resAerealWeight,
+     main = "Residuals - Aereal Dry Weight",
+     xlab = "Residuals",
+     col = "lightblue",
+     border = "black",
+     breaks = 20)
+```
+
+**Graphics**
+
+------------------------------------------------------------------------
+
+```{r}
+# Summarize data: Calculate mean and standard error
+df_summary <- df %>%
+  group_by(Treatment) %>%
+  summarise(
+    mean_aereal_dry_weight = mean(`Aereal dry weight`, na.rm = TRUE),
+    se_aereal_dry_weight = sd(`Aereal dry weight`, na.rm = TRUE) / sqrt(n()),  # Standard error
+    .groups = 'drop'
+  )
+
+# Plot the bar graph with gray bars and error bars
+ggplot(df_summary, aes(x = Treatment, y = mean_aereal_dry_weight)) +
+  geom_bar(stat = "identity", color = "black", fill = "gray", width = 0.7) +  # Gray bars
+  geom_errorbar(
+    aes(ymin = mean_aereal_dry_weight - se_aereal_dry_weight, ymax = mean_aereal_dry_weight + se_aereal_dry_weight),
+    width = 0.25  # Error bar width
+  ) +
+  labs(
+    title = "Aereal Dry Weight by Treatment",
+    x = "Treatment",
+    y = "Mean Aereal Dry Weight"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels for clarity
+    plot.title = element_text(hjust = 0.5)             # Center align title
+  )
+
+```
+
+### 3. Root Dry Weight
+
+**Analysis of Variance (ANOVA)**
+
+```{r}
+root_aov <- aov(`Root dry weight` ~ Treatment * Block, data = df)
+summary(root_aov)
+```
+
+**Interpretation**:
+
+-   **Treatment**: The p-value for the treatment factor (0.987) is not significant, indicating that the treatments (Control, EXAm, Infes, Infes + EXAm, Infes + Captan) do **not significantly affect** the outcome.
+
+-   **Block**: The p-value for the block factor (0.00134) is significant, suggesting that **blocks** (possibly environmental or experimental conditions) have a **significant effect** on the outcome.
+
+-   **Interaction**: The p-value for the interaction between treatment and block (0.827) is not significant, indicating that the effects of treatments do **not depend on the block**.
+
+**Normality**
+
+```{r}
+resRootWeight <- residuals(root_aov)
+shapiro.test(resRootWeight)
+```
+
+**Interpretation:**
+
+The Shapiro-Wilk normality test indicates that the data for root weight follows a normal distribution (p-value = 0.1422), as the p-value is greater than 0.05.
+
+**Visualize the behavior of the data**
+
+```{r}
+hist(resRootWeight, main = "Histogram of Residuals", xlab = "Residuals")
+qqnorm(resRootWeight)
+qqline(resRootWeight, col = "red")
+```
+
+**Graphics**
+
+------------------------------------------------------------------------
+
+```{r, warning=FALSE}
+# Summarize data: Calculate mean and standard error
+df_summary <- df %>%
+  group_by(Treatment) %>%
+  summarise(
+    mean_root_weight = mean(`Root dry weight`, na.rm = TRUE),
+    se_root_weight = sd(`Root dry weight`, na.rm = TRUE) / sqrt(n()),  # Standard error
+    .groups = 'drop'
+  )
+
+# Plot the bar graph with gray bars and error bars
+ggplot(df_summary, aes(x = Treatment, y = mean_root_weight)) +
+  geom_bar(stat = "identity", color = "black", fill = "gray", width = 0.7) +  # Gray bars
+  geom_errorbar(
+    aes(ymin = mean_root_weight - se_root_weight, ymax = mean_root_weight + se_root_weight),
+    width = 0.25  # Error bar width
+  ) +
+  labs(
+    title = "Root Dry Weight by Treatment",
+    x = "Treatment",
+    y = "Mean Root Dry Weight"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),  # Rotate x-axis labels for clarity
+    plot.title = element_text(hjust = 0.5)             # Center align title
+  )
+
+```

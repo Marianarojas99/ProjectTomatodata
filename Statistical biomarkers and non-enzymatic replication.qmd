@@ -1,13 +1,28 @@
 ---
+<<<<<<< HEAD
+title: "Biomarkers"
+=======
 title: "Biomarkers and Non-enzymatic Variables"
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 format: html
 editor: visual
 ---
 
+<<<<<<< HEAD
 ```{r}
 knitr::opts_chunk$set(fig.path = 'Graphs Replication Results/')
 ```
 
+=======
+<<<<<<< HEAD
+## Bio markers and Non- enzymatic variables
+
+The data collection started from day 45, where transplantation was carried out. Then every two weeks bio markers and non enzymatic variables were gathered (60, 75, 90, 105 days).
+
+**Required libraries**
+
+=======
+>>>>>>> ecde7e434af2c1fbb7f74842c828f9483ef9afa3
 # Introduction
 
 The data collection started from day 45, where transplantation was carried out. Then every two weeks biomarkers and non-enzymatic variables were gathered (60, 75, 90, 105 days).
@@ -16,20 +31,38 @@ The data collection started from day 45, where transplantation was carried out. 
 
 Loading of the required libraries.
 
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 ```{r,warning=FALSE, message=FALSE}
 if (!require("multcompView")) install.packages("multcompView")
 if (!require("dplyr")) install.packages("dplyr")
 if (!require("PMCMRplus")) install.packages("PMCMRplus")
 library(ggplot2)
+<<<<<<< HEAD
+```
+
+Call the data
+=======
 library(dplyr)
 library(multcompView)
 ```
 
 Calling of the data.
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 
 ```{r}
 library(readxl)
 df <- read_excel("DATA/tomato-clean.xlsx", sheet = 3)
+<<<<<<< HEAD
+
+```
+
+## H~2~O~2~
+
+### Statistical analysis
+
+Create an empty list to fill with data of each day.
+
+=======
 posthoc_letters_list <- list()
 ```
 
@@ -43,6 +76,7 @@ Create an empty list to fill with data of each day.
 
 *Code used for creating the empty list.*
 
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 ```{r}
 Days <- c(45, 60, 75, 90, 105)
 
@@ -56,6 +90,9 @@ results_table_H202 <- data.frame(
 posthoc_letters_list <- list()  
 ```
 
+<<<<<<< HEAD
+In the following for loop iterates over each day in the "Days" variable, performing several statistical operations on the data for each specific day. For each day, it filters the dataset to include only rows corresponding to that day, replaces missing values in the "H~2~O~2~" column with zero, and specifies *Block* and *Treatment* as factors. Then, an ANOVA is performed to test the effect of *Treatment* on *H202,* and the residuals are checked for normality using the Shapiro-Wilk test. If the residuals are not normally distributed, various transformations (square root, log, inverse) are applied to the data, and the corresponding ANOVA and normality tests are repeated. If all transformations fail to satisfy normality, a non-parametric Friedman test is performed. Post-hoc tests are conducted to identify significant differences between treatments, with the results stored in a table, including the day, test type, transformation used, and post-hoc method.
+=======
 **Phase II. A For Loop**
 
 In the following for loop iterates over each day in the "Days" variable, performing several statistical operations on the data for each specific day. For each day, it filters the data set to include only rows corresponding to that day, replaces missing values in the "H~2~O~2~" column with zero, and specifies *Block* and *Treatment* as factors.
@@ -63,6 +100,7 @@ In the following for loop iterates over each day in the "Days" variable, perform
 Then, an ANOVA is performed to test the effect of *Treatment* on *H202,* and the residuals are checked for normality using the Shapiro-Wilk test. If the residuals are not normally distributed, various transformations (square root, log, inverse) are applied to the data, and the corresponding ANOVA and normality tests are repeated. If all transformations fail to satisfy normality, a non-parametric Friedman test is performed. Post-hoc tests are conducted to identify significant differences between treatments, with the results stored in a table, including the day, test type, transformation used, and post-hoc method.
 
 *Code used for the A for Loop:*
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 
 ```{r}
 for (dia in Days) {
@@ -186,19 +224,28 @@ results_table_H202 <- unique(results_table_H202)
 
 ```
 
+<<<<<<< HEAD
+Print the results to know the transformations and the statistical analysis carried out.
+
+=======
 **Phase III. Printing of the Results (Test, Transformation, Post-Hoc, and Significance Letters)**
 
 Print the results to know the transformations and the statistical analysis carried out.
 
 *Codes used to print the results:*
 
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 ```{r}
 print(results_table_H202)
 ```
 
+<<<<<<< HEAD
+print the statistical differences for each day
+=======
 Print the statistical differences displaying the letters for each day.
 
 *Code use to print the letters:*
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 
 ```{r}
 for (dia in Days) {
@@ -208,6 +255,21 @@ for (dia in Days) {
 }
 ```
 
+<<<<<<< HEAD
+Graphic
+
+```{r}
+
+```
+
+## MDA
+
+### Statistical analysis
+
+Create an empty list to fill with data of each day.
+
+```{r}
+=======
 **Phase IV. Graphics**
 
 A bar plot is used to show the mean **H₂O₂** concentration across different treatments and days, with error bars indicating the standard error of the mean. The x-axis represents the treatments, while the y-axis displays the **H₂O₂** concentration (μmol g⁻¹ DW), with post-hoc statistical letters above the bars to indicate significant differences. The plot is faceted by day, allowing for day-wise comparisons, with each facet having a free y-axis scale.
@@ -264,6 +326,7 @@ The procedure for the following variables were conducted using the same codes as
 ### Statistical analysis
 
 ```{r, echo=FALSE, warning=FALSE}
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 results_table_MDA <- data.frame(
   Day = numeric(),
   Test = character(),
@@ -276,7 +339,13 @@ results_table_MDA <- data.frame(
 posthoc_letters_list <- list()
 ```
 
+<<<<<<< HEAD
+A for loop was performed for MDA, where the same transformations were performed.
+
+```{r, echo=FALSE}
+=======
 ```{r, echo=FALSE, warning=FALSE}
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 for (dia in Days) {
   
   df_filtered <- df[df$Day == dia, ]
@@ -372,6 +441,19 @@ for (dia in Days) {
 
 ```
 
+<<<<<<< HEAD
+**Analysis of data**
+
+Print the results to know the transformations and the statistical analysis carried out.
+
+```{r}
+print(results_table_MDA)
+```
+
+print the statistical differences for each day
+
+```{r}
+=======
 **Results of Test, Transformation, Post-Hoc**
 
 ------------------------------------------------------------------------
@@ -385,6 +467,7 @@ print(results_table_MDA)
 ------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 for (dia in Days) {
   cat("Día:", dia, "\n")
   print(posthoc_letters_list[[as.character(dia)]])
@@ -392,6 +475,18 @@ for (dia in Days) {
 }
 ```
 
+<<<<<<< HEAD
+Graphic
+
+```         
+```
+
+## Superoxide anion
+
+Repeat the same procedure per variable
+
+```{r, echo=FALSE}
+=======
 **Graphics**
 
 ------------------------------------------------------------------------
@@ -442,6 +537,7 @@ ggsave("MDA_plot.png", width = 12, height = 8, units = "in")
 ### Statistical analysis
 
 ```{r, echo=FALSE, warning=FALSE}
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 results_table_Superoxide <- data.frame(
   Day = numeric(),
   Test = character(),
@@ -453,7 +549,11 @@ results_table_Superoxide <- data.frame(
 posthoc_letters_list <- list()  
 ```
 
+<<<<<<< HEAD
+```{r}
+=======
 ```{r, echo=FALSE, warning=FALSE}
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 # Loop through each day
 for (dia in Days) {
   
@@ -567,20 +667,30 @@ for (dia in Days) {
 
 ```
 
+<<<<<<< HEAD
+**Analysis of data**
+
+```{r}
+=======
 **Result of Test, Transformation, and Post-Hoc**
 
 ------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 print(results_table_Superoxide)
 
 ```
 
+<<<<<<< HEAD
+```{r}
+=======
 Significance Letters
 
 ------------------------------------------------------------------------
 
 ```{r, echo=FALSE, warning=FALSE}
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 for (dia in Days) {
   cat("Día:", dia, "\n")
   print(posthoc_letters_list[[as.character(dia)]])
@@ -588,6 +698,12 @@ for (dia in Days) {
 }
 ```
 
+<<<<<<< HEAD
+Graph
+
+```{r}
+
+=======
 Graphics
 
 ------------------------------------------------------------------------
@@ -2417,4 +2533,5 @@ ggplot(df_summary_YellowCarotenoids, aes(x = Treatment, y = mean_YellowCarotenoi
 
 # Save the plot with custom dimensions
 ggsave("YellowCarotenoids_plot.png", width = 12, height = 8, units = "in")
+>>>>>>> e299823a2c145091eaf7c65869d93463deb87e98
 ```

@@ -13,5 +13,8 @@ data_long <- data1 %>%
                names_to = "Weeks",
                values_to = "Severity") %>%
   select(where(~ all(!is.na(.))))
+
+data_long$Samples <- rep(1:25, times = 5)
+
 View(data_long)
 

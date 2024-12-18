@@ -6,26 +6,111 @@ editor: visual
 
 ## Severity statistical analysis
 
-Explanation
+**Required libraries**
 
-Call
+```{r, message=FALSE}
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(emmeans)
+library(ggsignif)
+library(multcompView)
+library(multcomp)
+library(rstatix)
+library(nlme)
+library(dplyr)
+library(tidyr)
+```
+
+### Repeated Measures
+
+First, call the data for severity.
 
 ```{r}
 source("Data Organized/Data Severity.R")
 print(data_long)
 ```
 
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+Fitting a mixed-effects model involves using statistical methods to analyze data that include both fixed effects and random effects. This is particularly useful in situations where data is collected in groups or clusters, and you want to account for the variability both within and between these groups.
 
 ```{r}
-1 + 1
+# Fit the mixed-effects model
+model <- lme(Severity ~ Treatment * Weeks, random = ~1 | Block/Samples, data = data_long)
+summary(model)
+
 ```
 
-You can add options to executable code like this
+This function calculates the estimated marginal means for the specified model. In this case, it uses a mixed-effects model (model). it is important to specify how to calculate EMMs for the `Treatment` factor while considering the `Weeks` factor as a conditioning variable. The summary function summarizes the estimated marginal means and provides a concise output that includes the estimated means for each treatment at each level of weeks,
+
+```{r, warning=FALSE, message=FALSE}
+# Obtain estimated marginal means
+emm <- emmeans(model, ~ Treatment)
+summary(emm)
+```
+
+The pairs(emm) function performs pairwise comparisons among the estimated marginal means (EMMs) of the treatments calculated earlier. A pairwise comparison is a statistical analysis technique used to compare the differences between two groups or treatments at a time. This approach is commonly employed after conducting an overall analysis, such as an ANOVA or MANOVA, to identify which specific groups are significantly different from each other.
 
 ```{r}
-#| echo: false
-2 * 2
+# Pairwise comparisons
+pairs(emm)
+
+comparissons <- cld(emm, alpha=0.05, Letters=letters, adjust="tukey")
+
+Lettersabc <- comparissons$.group
+Lettersabc
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+To calculate Mean Severity for Each Treatment at Each Week, loading the `dplyr` library provides powerful tools for data manipulation and transformation in R.
+
+-   `data_long` is the input data frame that contains the data in long format (with one row for each observation).
+
+<!-- -->
+
+-   The `%>%` operator (pipe) is used to chain together multiple operations, allowing for a cleaner and more readable code flow.
+
+-   We group the data with week and treatmets,
+
+-   This calculates the mean of the `Severity` variable for each group (i.e., each combination of `Weeks` and `Treatment`).
+
+-   This argument specifies that after summarizing, the grouping structure should be dropped. This means that the resulting `mean_data` will no longer be grouped, making it easier to work with for subsequent analyses or visualizations.
+
+medias_df
+
+```{r}
+# Calculate mean severity for each treatment at each week
+emm_data <- as.data.frame(comparissons)
+
+letters_df <- data.frame(Treatment = comparissons$Treatment,
+                         Letters = comparissons$.group)
+
+
+medias_df <- data_long %>%
+  group_by(Treatment, Weeks) %>%
+  summarise(Severity_mean = mean(Severity), .groups = "drop")
+```
+
+Creating a line graph: The overall goal of this visualization is to illustrate how the severity of pathogen suppression varies over time for each treatment, allowing for easy comparison and interpretation of the effects of different treatments throughout the study period.
+
+```{r}
+
+last_week_df <- medias_df %>%
+  group_by(Treatment) %>%
+  filter(Weeks == max(Weeks)) %>%
+  ungroup()
+
+medias_df <- medias_df %>%
+  left_join(letters_df, by = "Treatment")
+
+ggplot(medias_df, aes(x = Weeks, y = Severity_mean, color = Treatment, group = Treatment)) +
+  geom_line(size = 1) +     
+  geom_point(size = 3, alpha = 0.5) +     
+  geom_text(data = last_week_df, aes(x = Weeks, y = Severity_mean, label = Letters), 
+            inherit.aes = FALSE,  # No heredar las estéticas de ggplot
+            hjust = -0.2, vjust = 0, size = 5) +  # Solo añadir las letras al final de las curvas
+  labs(title = "Severity of Pathogen Suppression Over Time",
+       x = "Weeks",
+       y = "Mean Severity") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  
+
+```

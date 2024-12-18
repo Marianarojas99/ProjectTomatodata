@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.33">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -63,10 +63,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="Statistical Yield and Nfruits_files/libs/quarto-html/tippy.umd.min.js"></script>
 <script src="Statistical Yield and Nfruits_files/libs/quarto-html/anchor.min.js"></script>
 <link href="Statistical Yield and Nfruits_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="Statistical Yield and Nfruits_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="Statistical Yield and Nfruits_files/libs/quarto-html/quarto-syntax-highlighting-07ba0ad10f5680c660e360ac31d2f3b6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="Statistical Yield and Nfruits_files/libs/bootstrap/bootstrap.min.js"></script>
 <link href="Statistical Yield and Nfruits_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="Statistical Yield and Nfruits_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="Statistical Yield and Nfruits_files/libs/bootstrap/bootstrap-b8d30c7eeda119d43de224048e70de8f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
@@ -4429,7 +4429,7 @@ W = 0.97289, p-value = 0.1073</code></pre>
 </div>
 <p>P-value = 0.1073 means that data has a normal distribution</p>
 <p>Since we are interested in knowing the effect of the treatments and not the effect of the clusters, we continue the analysis with the data that contemplates the total, the one that sum of the clusters.</p>
-<p>Visualize the behavior of the data</p>
+<p><strong>Visualize the behavior of the data</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(resYieldtotal, <span class="at">main =</span> <span class="st">"Q-Q Plot"</span>)</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(resYieldtotal, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -4454,7 +4454,7 @@ W = 0.97289, p-value = 0.1073</code></pre>
 </div>
 </div>
 </div>
-<p>Post hoc test tukey</p>
+<p><strong>Post hoc test tukey</strong></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(Yieldtotal, <span class="st">"Treatment"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -4501,10 +4501,6 @@ Infes+EXAm-Infes+Captan   514.1202  -371.3751 1399.6155 0.4846553</code></pre>
 <span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Yield"</span>) <span class="sc">+</span></span>
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Use of `dftotal$tfyield` is discouraged.
-ℹ Use `tfyield` instead.</code></pre>
-</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4523,8 +4519,8 @@ Infes+EXAm-Infes+Captan   514.1202  -371.3751 1399.6155 0.4846553</code></pre>
 <ul>
 <li><p>Taking into account clusters:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>fruitnoaov <span class="ot">&lt;-</span> <span class="fu">aov</span>(fnumber<span class="sc">~</span>Treatment<span class="sc">*</span>Block, <span class="at">data =</span> df)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fruitnoaov)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>fruitnoaov <span class="ot">&lt;-</span> <span class="fu">aov</span>(fnumber<span class="sc">~</span>Treatment<span class="sc">*</span>Block, <span class="at">data =</span> df)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fruitnoaov)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                 Df Sum Sq Mean Sq F value Pr(&gt;F)  
 Treatment         4    120  29.992   3.009 0.0181 *
@@ -4538,8 +4534,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <li><p>Total Number of fruits</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>fruitnototal <span class="ot">&lt;-</span> <span class="fu">aov</span>(tfnumber<span class="sc">~</span>Treatment<span class="sc">*</span>Block, <span class="at">data =</span> dftotal)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fruitnototal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>fruitnototal <span class="ot">&lt;-</span> <span class="fu">aov</span>(tfnumber<span class="sc">~</span>Treatment<span class="sc">*</span>Block, <span class="at">data =</span> dftotal)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fruitnototal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                Df Sum Sq Mean Sq F value   Pr(&gt;F)    
 Treatment        4  719.8  179.95   6.654 0.000149 ***
@@ -4559,8 +4555,8 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <ul>
 <li><p>Taking into account clusters:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>resfruitno <span class="ot">&lt;-</span> <span class="fu">residuals</span>(fruitnoaov)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(resfruitno)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>resfruitno <span class="ot">&lt;-</span> <span class="fu">residuals</span>(fruitnoaov)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(resfruitno)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
@@ -4573,8 +4569,8 @@ W = 0.96523, p-value = 7.707e-09</code></pre>
 <li><p>Total number of fruits</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>resfruitnotot <span class="ot">&lt;-</span> <span class="fu">residuals</span>(fruitnototal)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(resfruitnotot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>resfruitnotot <span class="ot">&lt;-</span> <span class="fu">residuals</span>(fruitnototal)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(resfruitnotot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
@@ -4586,10 +4582,10 @@ W = 0.99068, p-value = 0.8623</code></pre>
 <p>The data present a normal distribution.</p>
 <ul>
 <li><p>Since we are interested in knowing the effect of the treatments and not the effect of the clusters, we continue the analysis with the data that contemplates the total, the one that sum of the clusters.</p>
-<p>Visualize the behavior of the data</p>
+<p><strong>Visualize the behavior of the data</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(resfruitnotot, <span class="at">main =</span> <span class="st">"Q-Q Plot"</span>)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(resfruitnotot, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(resfruitnotot, <span class="at">main =</span> <span class="st">"Q-Q Plot"</span>)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(resfruitnotot, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4597,12 +4593,12 @@ W = 0.99068, p-value = 0.8623</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(resfruitnotot,</span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Residuals"</span>,</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Residuals"</span>, </span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"blue"</span>, </span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"black"</span>,</span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(resfruitnotot,</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Residuals"</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Residuals"</span>, </span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"blue"</span>, </span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"black"</span>,</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4612,9 +4608,9 @@ W = 0.99068, p-value = 0.8623</code></pre>
 </div>
 </div></li>
 </ul>
-<p>Homocedasticity</p>
+<p><strong>Homocedasticity</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(resfruitnotot<span class="sc">~</span>dftotal<span class="sc">$</span>Treatment)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(resfruitnotot<span class="sc">~</span>dftotal<span class="sc">$</span>Treatment)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Bartlett test of homogeneity of variances
@@ -4624,10 +4620,10 @@ Bartlett's K-squared = 6.0313, df = 4, p-value = 0.1968</code></pre>
 </div>
 </div>
 <p>There is no statistically significant evidence to suggest that the variances of the response variable differ across the treatment groups. The assumption of homogeneity of variances is satisfied</p>
-<p>Post hoc test tukey</p>
+<p><strong>Post hoc test tukey</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>tukey_result1 <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(fruitnototal, <span class="st">"Treatment"</span>)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>tukey_result1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>tukey_result1 <span class="ot">&lt;-</span> <span class="fu">TukeyHSD</span>(fruitnototal, <span class="st">"Treatment"</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>tukey_result1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Tukey multiple comparisons of means
     95% family-wise confidence level
@@ -4647,9 +4643,9 @@ Infes+Captan-Infes       2.466667  -2.861508  7.794841 0.6927822
 Infes+EXAm-Infes         6.066667   0.738492 11.394841 0.0177767
 Infes+EXAm-Infes+Captan  3.600000  -1.728175  8.928175 0.3299310</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>tukey_pvalues1 <span class="ot">&lt;-</span> tukey_result1<span class="sc">$</span>Treatment[, <span class="st">"p adj"</span>]</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>tukey_letters1 <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(tukey_pvalues1)<span class="sc">$</span>Letters</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>tukey_letters1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>tukey_pvalues1 <span class="ot">&lt;-</span> tukey_result1<span class="sc">$</span>Treatment[, <span class="st">"p adj"</span>]</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>tukey_letters1 <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(tukey_pvalues1)<span class="sc">$</span>Letters</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>tukey_letters1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>        EXAm        Infes Infes+Captan   Infes+EXAm      Control 
          "a"          "b"         "bc"         "ac"         "bc" </code></pre>
@@ -4659,21 +4655,17 @@ Infes+EXAm-Infes+Captan  3.600000  -1.728175  8.928175 0.3299310</code></pre>
 <p>Infes + Captan (“bc”): These plants share a group with Infes (“b”) and the Control (“c”), indicating that Captan provides moderate improvement, but not enough to restore their condition to the level of healthy plants treated with EXAm (“a”).</p>
 <p>Infes + EXAm (“ac”): These plants are in an intermediate group (“ac”), showing results similar to EXAm-treated healthy plants (“a”) and also overlapping with group “c” (e.g., Captan-treated or untreated controls).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dftotal, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> tfnumber)) <span class="sc">+</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Treatment), <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span>  </span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x =</span> Treatment, </span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> <span class="fu">max</span>(dftotal<span class="sc">$</span>tfnumber) <span class="sc">+</span> <span class="dv">1</span>,  </span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> tukey_letters1[<span class="fu">as.character</span>(Treatment)]), </span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span>  </span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Effect of treatment on number of fruits"</span>,</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Treatment"</span>,</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Number of fruits"</span>) <span class="sc">+</span></span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Use of `dftotal$tfnumber` is discouraged.
-ℹ Use `tfnumber` instead.</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dftotal, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> tfnumber)) <span class="sc">+</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Treatment), <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span>  </span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">x =</span> Treatment, </span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> <span class="fu">max</span>(dftotal<span class="sc">$</span>tfnumber) <span class="sc">+</span> <span class="dv">1</span>,  </span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> tukey_letters1[<span class="fu">as.character</span>(Treatment)]), </span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span>  </span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Effect of treatment on number of fruits"</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Treatment"</span>,</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Number of fruits"</span>) <span class="sc">+</span></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4690,8 +4682,8 @@ Infes+EXAm-Infes+Captan  3.600000  -1.728175  8.928175 0.3299310</code></pre>
 <h3 class="anchored" data-anchor-id="statistical-analysis-2">Statistical analysis</h3>
 <p><strong>Analysis of Variance (ANOVA)</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>FWeightTotal <span class="ot">&lt;-</span> <span class="fu">aov</span>(fweight<span class="sc">~</span>Treatment<span class="sc">*</span>Block, <span class="at">data =</span> dftotal) </span>
-<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(FWeightTotal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>FWeightTotal <span class="ot">&lt;-</span> <span class="fu">aov</span>(fweight<span class="sc">~</span>Treatment<span class="sc">*</span>Block, <span class="at">data =</span> dftotal) </span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(FWeightTotal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                Df Sum Sq Mean Sq F value Pr(&gt;F)
 Treatment        4   2217   554.4   1.583  0.189
@@ -4714,8 +4706,8 @@ Residuals       65  22763   350.2               </code></pre>
 <h2 class="anchored" data-anchor-id="test-of-statistical-assumptions">Test of Statistical Assumptions</h2>
 <p><strong>Normality</strong></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>resFweightTotal <span class="ot">&lt;-</span> <span class="fu">residuals</span>(FWeightTotal) </span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(resFweightTotal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>resFweightTotal <span class="ot">&lt;-</span> <span class="fu">residuals</span>(FWeightTotal) </span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(resFweightTotal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
@@ -4735,12 +4727,12 @@ W = 0.91562, p-value = 9.99e-05</code></pre>
 <section id="data-transformation" class="level3">
 <h3 class="anchored" data-anchor-id="data-transformation"><strong>1. Data Transformation</strong></h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Log transformation</span></span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>dftotal<span class="sc">$</span>fweight_log <span class="ot">&lt;-</span> <span class="fu">log</span>(dftotal<span class="sc">$</span>fweight)</span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-run ANOVA with transformed data</span></span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>FWeightTotal_log <span class="ot">&lt;-</span> <span class="fu">aov</span>(fweight_log <span class="sc">~</span> Treatment <span class="sc">*</span> Block, <span class="at">data =</span> dftotal)</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(FWeightTotal_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Log transformation</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>dftotal<span class="sc">$</span>fweight_log <span class="ot">&lt;-</span> <span class="fu">log</span>(dftotal<span class="sc">$</span>fweight)</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-run ANOVA with transformed data</span></span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>FWeightTotal_log <span class="ot">&lt;-</span> <span class="fu">aov</span>(fweight_log <span class="sc">~</span> Treatment <span class="sc">*</span> Block, <span class="at">data =</span> dftotal)</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(FWeightTotal_log)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                Df Sum Sq Mean Sq F value Pr(&gt;F)
 Treatment        4 0.1345 0.03364   1.774  0.145
@@ -4748,8 +4740,8 @@ Block            1 0.0000 0.00004   0.002  0.963
 Treatment:Block  4 0.0314 0.00784   0.414  0.798
 Residuals       65 1.2327 0.01896               </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test normality of residuals</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">residuals</span>(FWeightTotal_log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Test normality of residuals</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(<span class="fu">residuals</span>(FWeightTotal_log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Shapiro-Wilk normality test
@@ -4768,7 +4760,7 @@ W = 0.93677, p-value = 0.001003</code></pre>
 <h2 class="anchored" data-anchor-id="non-parametric-test"><strong>2. Non-Parametric Test</strong></h2>
 <p>The transformations do not achieve normality, therefore <strong>Kruskal-Wallis test</strong> which does not require the assumption of normality will be performed.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>FWeightKW <span class="ot">&lt;-</span> <span class="fu">kruskal.test</span>(fweight <span class="sc">~</span> Treatment, <span class="at">data =</span> dftotal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>FWeightKW <span class="ot">&lt;-</span> <span class="fu">kruskal.test</span>(fweight <span class="sc">~</span> Treatment, <span class="at">data =</span> dftotal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <section id="interpretation-3" class="level3">
 <h3 class="anchored" data-anchor-id="interpretation-3"><strong>Interpretation</strong></h3>
@@ -4779,7 +4771,7 @@ W = 0.93677, p-value = 0.001003</code></pre>
 <h2 class="anchored" data-anchor-id="homoscedasticity"><strong>Homoscedasticity</strong></h2>
 <p>Test for homoscedasticity using Bartlett’s test.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(fweight <span class="sc">~</span> Treatment, <span class="at">data =</span> dftotal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bartlett.test</span>(fweight <span class="sc">~</span> Treatment, <span class="at">data =</span> dftotal)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Bartlett test of homogeneity of variances
@@ -4794,8 +4786,8 @@ Bartlett's K-squared = 4.9861, df = 4, p-value = 0.2887</code></pre>
 <h2 class="anchored" data-anchor-id="visualization-of-the-datas-behaviour"><strong>Visualization of the Data’s Behaviour</strong></h2>
 <p>Usage of <strong><code>qqnorm()</code></strong> and <strong><code>qqline()</code></strong> functions to visualize the normality of the residuals or transformed data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(resFweightTotal, <span class="at">main =</span> <span class="st">"Q-Q Plot"</span>)</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(resFweightTotal, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(resFweightTotal, <span class="at">main =</span> <span class="st">"Q-Q Plot"</span>)</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(resFweightTotal, <span class="at">col =</span> <span class="st">"red"</span>, <span class="at">lwd =</span> <span class="dv">2</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4803,12 +4795,12 @@ Bartlett's K-squared = 4.9861, df = 4, p-value = 0.2887</code></pre>
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(resFweightTotal,</span>
-<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Residuals"</span>,</span>
-<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Residuals"</span>, </span>
-<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"maroon"</span>, </span>
-<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"black"</span>,</span>
-<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(resFweightTotal,</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">"Residuals"</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">"Residuals"</span>, </span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">"maroon"</span>, </span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">"black"</span>,</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -4822,20 +4814,20 @@ Bartlett's K-squared = 4.9861, df = 4, p-value = 0.2887</code></pre>
 <h2 class="anchored" data-anchor-id="non-parametric-post-hoc-test-dunns-test"><strong>Non-parametric Post-Hoc Test (Dunn’s Test)</strong></h2>
 <p>The Kruskal-Wallis test suggests significant differences in fruit weight distributions across the treatments. However, further non-parametric post-hoc analysis is needed to determine which specific treatment groups are different, thus, Dunn’s test was performed.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>dunn_results <span class="ot">&lt;-</span> <span class="fu">dunnTest</span>(fweight <span class="sc">~</span> Treatment, <span class="at">data =</span> dftotal, <span class="at">method =</span> <span class="st">"bonferroni"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>dunn_results <span class="ot">&lt;-</span> <span class="fu">dunnTest</span>(fweight <span class="sc">~</span> Treatment, <span class="at">data =</span> dftotal, <span class="at">method =</span> <span class="st">"bonferroni"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: Treatment was coerced to a factor.</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>dunn <span class="ot">&lt;-</span> dunn_results<span class="sc">$</span>res<span class="sc">$</span>P.adj</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(dunn) <span class="ot">&lt;-</span> dunn_results<span class="sc">$</span>res<span class="sc">$</span>Comparison</span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>dunnfinal <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(dunn)</span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>dunn_letters_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Treatment =</span> <span class="fu">names</span>(dunnfinal<span class="sc">$</span>Letters),</span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">letters =</span> dunnfinal<span class="sc">$</span>Letters</span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>dunn_letters_df<span class="sc">$</span>Treatment <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">""</span>, dunn_letters_df<span class="sc">$</span>Treatment)</span>
-<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>df0_merged <span class="ot">&lt;-</span> <span class="fu">left_join</span>(dftotal, dunn_letters_df, <span class="at">by =</span> <span class="st">"Treatment"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>dunn <span class="ot">&lt;-</span> dunn_results<span class="sc">$</span>res<span class="sc">$</span>P.adj</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(dunn) <span class="ot">&lt;-</span> dunn_results<span class="sc">$</span>res<span class="sc">$</span>Comparison</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>dunnfinal <span class="ot">&lt;-</span> <span class="fu">multcompLetters</span>(dunn)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>dunn_letters_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">Treatment =</span> <span class="fu">names</span>(dunnfinal<span class="sc">$</span>Letters),</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">letters =</span> dunnfinal<span class="sc">$</span>Letters</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>dunn_letters_df<span class="sc">$</span>Treatment <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">" "</span>, <span class="st">""</span>, dunn_letters_df<span class="sc">$</span>Treatment)</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>df0_merged <span class="ot">&lt;-</span> <span class="fu">left_join</span>(dftotal, dunn_letters_df, <span class="at">by =</span> <span class="st">"Treatment"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in left_join(dftotal, dunn_letters_df, by = "Treatment"): Detected an unexpected many-to-many relationship between `x` and `y`.
 ℹ Row 16 of `x` matches multiple rows in `y`.
@@ -4847,28 +4839,28 @@ Bartlett's K-squared = 4.9861, df = 4, p-value = 0.2887</code></pre>
 <section id="visualization-of-data" class="level3">
 <h3 class="anchored" data-anchor-id="visualization-of-data">Visualization of Data</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>letter_positions <span class="ot">&lt;-</span> df0_merged <span class="sc">%&gt;%</span></span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Treatment) <span class="sc">%&gt;%</span></span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">max_fweight =</span> <span class="fu">max</span>(fweight, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dunn_letters_df, <span class="at">by =</span> <span class="st">"Treatment"</span>)</span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>y_adjust <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df0_merged, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> fweight)) <span class="sc">+</span></span>
-<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Treatment), <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span>  <span class="co"># Boxplot with color</span></span>
-<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> letter_positions,                    <span class="co"># Use precomputed letter positions</span></span>
-<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> Treatment, </span>
-<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> max_fweight <span class="sc">+</span> y_adjust, </span>
-<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> letters), </span>
-<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">2</span>, <span class="at">vjust =</span> <span class="dv">0</span>) <span class="sc">+</span>  <span class="co"># Position letters just above the boxplots</span></span>
-<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb56-14"><a href="#cb56-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Effect of Treatment on Fruit Weight"</span>,</span>
-<span id="cb56-15"><a href="#cb56-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Treatment"</span>,</span>
-<span id="cb56-16"><a href="#cb56-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Fruit Weight"</span></span>
-<span id="cb56-17"><a href="#cb56-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb56-18"><a href="#cb56-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb56-19"><a href="#cb56-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb56-20"><a href="#cb56-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>),             <span class="co"># Center the title</span></span>
-<span id="cb56-21"><a href="#cb56-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)   <span class="co"># Rotate x-axis labels for clarity</span></span>
-<span id="cb56-22"><a href="#cb56-22" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>letter_positions <span class="ot">&lt;-</span> df0_merged <span class="sc">%&gt;%</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Treatment) <span class="sc">%&gt;%</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">max_fweight =</span> <span class="fu">max</span>(fweight, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dunn_letters_df, <span class="at">by =</span> <span class="st">"Treatment"</span>)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>y_adjust <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df0_merged, <span class="fu">aes</span>(<span class="at">x =</span> Treatment, <span class="at">y =</span> fweight)) <span class="sc">+</span></span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">fill =</span> Treatment), <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span>  <span class="co"># Boxplot with color</span></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> letter_positions,                    <span class="co"># Use precomputed letter positions</span></span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> Treatment, </span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> max_fweight <span class="sc">+</span> y_adjust, </span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">label =</span> letters), </span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">size =</span> <span class="dv">2</span>, <span class="at">vjust =</span> <span class="dv">0</span>) <span class="sc">+</span>  <span class="co"># Position letters just above the boxplots</span></span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Effect of Treatment on Fruit Weight"</span>,</span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Treatment"</span>,</span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Fruit Weight"</span></span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb54-19"><a href="#cb54-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb54-20"><a href="#cb54-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>),             <span class="co"># Center the title</span></span>
+<span id="cb54-21"><a href="#cb54-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>)   <span class="co"># Rotate x-axis labels for clarity</span></span>
+<span id="cb54-22"><a href="#cb54-22" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">

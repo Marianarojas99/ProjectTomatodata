@@ -1,0 +1,792 @@
+---
+title: "Analysis over time"
+format: html
+editor: visual
+---
+
+Due to the bio marker assessments and non-enzymatic variables were taken over time, a repeated measures analysis can be performed.
+
+**Required libraries**
+
+```{r, warning=FALSE, message=FALSE}
+library(lme4)
+library(lmerTest)
+library(ggplot2)
+library(emmeans)
+library(ggsignif)
+library(multcompView)
+library(multcomp)
+library(rstatix)
+library(nlme)
+library(dplyr)
+```
+
+Call the data
+
+```{r}
+library(readxl)
+df <- read_excel("DATA/tomato-clean.xlsx", sheet = 3)
+```
+
+## 1. H~2~O~2~
+
+### Statistical analysis
+
+### Linear mixed model
+
+```{r, message=FALSE}
+?lmer
+model <- lmer(H202 ~ Day * Treatment + (1 | Block), data = df)
+summary(model)
+```
+
+**Graphic**
+
+```{r}
+df$predicted <- predict(model)
+ggplot(df, aes(x = Day, y = H202, color = Treatment)) +
+  geom_point(alpha = 0.6) +
+  geom_line(aes(y = predicted), size = 1) +
+  theme_minimal() +
+  labs(title = "Effect of the treatment",
+       x = "Day",
+       y = "H202")
+```
+
+## Repeated measures
+
+A repeated measures analysis is a statistical method used when the same subjects (or experimental units) are measured multiple times under different conditions, over time, or across various levels of a factor. It accounts for the fact that repeated observations on the same subject are not independent.
+
+-   **Fixed Effects**:
+
+-   **`H202 ~ Treatment * Day`** includes main effects for `Treatment` and `Day` and their interaction.
+
+-   **Random Effects**:
+
+    -   **`random = ~1 | Block/Samples`** specifies a hierarchical random-effects structure:
+
+        -   **`~1`**: Indicates random intercepts for each grouping level.
+
+        -   **`Block/Samples`**: Models nested random effects:
+
+            -   **`Block`**: Random intercepts for each block.
+
+    -   **`Samples`**: Random intercepts nested within `Block` (e.g., multiple samples taken from each block).
+
+        Once the pairwise was done, the tukey changed to sidak .
+
+        ```         
+        Note: adjust = "tukey" was changed to "sidak" because "tukey" is only appropriate for one set of pairwise comparisons
+        ```
+
+```{r, message=FALSE}
+
+modelo_repet <- lme(H202 ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet
+
+emm_treatments <- emmeans(modelo_repet, ~ Treatment)
+
+comparissons <- cld(emm_treatments, alpha=0.05, Letters=letters, adjust="tukey")
+
+Lettersabc <- comparissons$.group
+Lettersabc
+```
+
+Significance:
+
+```{r}
+emm_data <- as.data.frame(comparissons)
+
+letters_df <- data.frame(Treatment = comparissons$Treatment,
+                         Letters = comparissons$.group)
+
+
+medias_df <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(H202_mean = mean(H202), .groups = "drop")
+
+
+lastday <- medias_df %>%
+  filter(Day == max(medias_df$Day)) %>%
+  left_join(letters_df, by = "Treatment") 
+
+
+ggplot(medias_df, aes(x = Day, y = H202_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday, 
+            aes(label = Letters, x = Day + 1, y = H202_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "H2O2", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 2. MDA
+
+### Statistical analysis
+
+Because the measurements are repeated over time, a repeated measures analysis will be performed for all variables.
+
+```{r, message=FALSE}
+df$MDA[is.na(df$MDA)] <- mean(df$MDA, na.rm = TRUE)
+modelo_repet <- lme(MDA ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet
+
+
+emm_treatmentsmda <- emmeans(modelo_repet, ~ Treatment)
+
+
+comparisonsmda <- cld(emm_treatmentsmda, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+# Extraer las letras significativas
+Lettersabcmda <- comparisonsmda$.group
+
+# Mostrar las letras significativas
+Lettersabcmda
+```
+
+Significance:
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+letters_df <- data.frame(Treatment = comparisonsmda$Treatment,
+                         Letters = comparisonsmda$.group)
+
+# Calculate means for MDA by Treatment and Day
+medias_df <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(MDA_mean = mean(MDA), .groups = "drop")
+
+# Get data for the last day to display letters on the plot
+lastday <- medias_df %>%
+  filter(Day == max(medias_df$Day)) %>%
+  left_join(letters_df, by = "Treatment")
+
+# Create the plot
+ggplot(medias_df, aes(x = Day, y = MDA_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday, 
+            aes(label = Letters, x = Day + 1, y = MDA_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "MDA", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 3. Superoxide oxide
+
+### Statistical analysis
+
+```{r, echo=FALSE, message=FALSE}
+modelo_repet <- lme(Superoxide ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet
+
+emm_treatments_superoxide <- emmeans(modelo_repet, ~ Treatment)
+
+#
+comparisons_superoxide <- cld(emm_treatments_superoxide, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+
+Lettersabc_superoxide <- comparisons_superoxide$.group
+
+#
+Lettersabc_superoxide
+
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r,echo=FALSE}
+letters_df <- data.frame(Treatment = comparisons_superoxide$Treatment,
+                         Letters = comparisons_superoxide$.group)
+
+
+medias_df <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Superoxide_mean = mean(Superoxide), .groups = "drop")
+
+
+lastday <- medias_df %>%
+  filter(Day == max(medias_df$Day)) %>%
+  left_join(letters_df, by = "Treatment")
+
+
+ggplot(medias_df, aes(x = Day, y = Superoxide_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday, 
+            aes(label = Letters, x = Day + 1, y = Superoxide_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Superoxide", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 4. Phenols
+
+### Statistical analysis
+
+```{r, echo=FALSE}
+modelo_repet <- lme(Phenols ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+
+emm_treatments_phenols <- emmeans(modelo_repet, ~ Treatment)
+
+
+comparisons_phenols <- cld(emm_treatments_phenols, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+
+Lettersabc_phenols <- comparisons_phenols$.group
+
+
+Lettersabc_phenols
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r,echo=FALSE}
+letters_df_phenols <- data.frame(Treatment = comparisons_phenols$Treatment,
+                                 Letters = comparisons_phenols$.group)
+
+
+medias_df_phenols <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Phenols_mean = mean(Phenols), .groups = "drop")
+
+
+lastday_phenols <- medias_df_phenols %>%
+  filter(Day == max(medias_df_phenols$Day)) %>%
+  left_join(letters_df_phenols, by = "Treatment")
+
+
+ggplot(medias_df_phenols, aes(x = Day, y = Phenols_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_phenols, 
+            aes(label = Letters, x = Day + 1, y = Phenols_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Phenols", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 5. Flavonoids
+
+### Statistical Analysis
+
+```{r, echo=FALSE}
+modelo_repet <- lme(Flavonoids ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+
+emm_treatments_flavonoids <- emmeans(modelo_repet, ~ Treatment)
+
+
+comparisons_flavonoids <- cld(emm_treatments_flavonoids, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+
+Lettersabc_flavonoids <- comparisons_flavonoids$.group
+
+
+Lettersabc_flavonoids
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+letters_df_flavonoids <- data.frame(Treatment = comparisons_flavonoids$Treatment,
+                                    Letters = comparisons_flavonoids$.group)
+
+
+medias_df_flavonoids <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Flavonoids_mean = mean(Flavonoids), .groups = "drop")
+
+
+lastday_flavonoids <- medias_df_flavonoids %>%
+  filter(Day == max(medias_df_flavonoids$Day)) %>%
+  left_join(letters_df_flavonoids, by = "Treatment")
+
+
+ggplot(medias_df_flavonoids, aes(x = Day, y = Flavonoids_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_flavonoids, 
+            aes(label = Letters, x = Day + 1, y = Flavonoids_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Flavonoids", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 6. Vitamin C
+
+### Statistical Analysis
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Define the model for Vitamin C using the cleaned column name
+modelo_repet <- lme(`Vitamin_C` ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+# Compute emmeans for Vitamin C by Treatment
+emm_treatments_vitamin_C <- emmeans(modelo_repet, ~ Treatment)
+
+# Conduct Tukey's HSD and store letters for comparison
+comparisons_vitamin_C <- cld(emm_treatments_vitamin_C, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+# Extract the groupings (letters) for Vitamin C
+Lettersabc_vitamin_C <- comparisons_vitamin_C$.group
+
+Lettersabc_vitamin_C
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Conduct comparisons and assign letters (replace Flavonoids with Vitamin C)
+letters_df_vitamin_C <- data.frame(Treatment = comparisons_vitamin_C$Treatment,
+                                    Letters = comparisons_vitamin_C$.group)
+
+# Summarize the mean for Vitamin C by Treatment and Day
+medias_df_vitamin_C <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Vitamin_C_mean = mean(Vitamin_C), .groups = "drop")
+
+# Prepare the dataset for the last day
+lastday_vitamin_C <- medias_df_vitamin_C %>%
+  filter(Day == max(medias_df_vitamin_C$Day)) %>%
+  left_join(letters_df_vitamin_C, by = "Treatment")
+
+# Create the plot
+ggplot(medias_df_vitamin_C, aes(x = Day, y = Vitamin_C_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_vitamin_C, 
+            aes(label = Letters, x = Day + 1, y = Vitamin_C_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Vitamin C", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 7. Chlorophyll A
+
+### Statistical Analysis
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Define the model for Chlorophyll A using the cleaned column name
+modelo_repet <- lme(Chlorophyll_A ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+# Compute emmeans for Chlorophyll A by Treatment
+emm_treatments_chlorophyll_A <- emmeans(modelo_repet, ~ Treatment)
+
+# Conduct Tukey's HSD and store letters for comparison
+comparisons_chlorophyll_A <- cld(emm_treatments_chlorophyll_A, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+# Extract the groupings (letters) for Chlorophyll A
+Lettersabc_chlorophyll_A <- comparisons_chlorophyll_A$.group
+
+Lettersabc_chlorophyll_A
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores (again, to ensure consistency)
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Conduct comparisons and assign letters for Chlorophyll A
+letters_df_chlorophyll_A <- data.frame(Treatment = comparisons_chlorophyll_A$Treatment,
+                                        Letters = comparisons_chlorophyll_A$.group)
+
+# Summarize the mean for Chlorophyll A by Treatment and Day
+medias_df_chlorophyll_A <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Chlorophyll_A_mean = mean(Chlorophyll_A), .groups = "drop")
+
+# Prepare the dataset for the last day
+lastday_chlorophyll_A <- medias_df_chlorophyll_A %>%
+  filter(Day == max(medias_df_chlorophyll_A$Day)) %>%
+  left_join(letters_df_chlorophyll_A, by = "Treatment")
+
+# Create the plot for Chlorophyll A
+ggplot(medias_df_chlorophyll_A, aes(x = Day, y = Chlorophyll_A_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_chlorophyll_A, 
+            aes(label = Letters, x = Day + 1, y = Chlorophyll_A_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Chlorophyll A", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 8. Chlorophyll B
+
+### Statistical Analysis
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Define the model for Chlorophyll B using the cleaned column name
+modelo_repet <- lme(Chlorophyll_B ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+# Compute emmeans for Chlorophyll B by Treatment
+emm_treatments_chlorophyll_B <- emmeans(modelo_repet, ~ Treatment)
+
+# Conduct Tukey's HSD and store letters for comparison
+comparisons_chlorophyll_B <- cld(emm_treatments_chlorophyll_B, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+# Extract the groupings (letters) for Chlorophyll B
+Lettersabc_chlorophyll_B <- comparisons_chlorophyll_B$.group
+
+Lettersabc_chlorophyll_B
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores (again, to ensure consistency)
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Conduct comparisons and assign letters for Chlorophyll B
+letters_df_chlorophyll_B <- data.frame(Treatment = comparisons_chlorophyll_B$Treatment,
+                                        Letters = comparisons_chlorophyll_B$.group)
+
+# Summarize the mean for Chlorophyll B by Treatment and Day
+medias_df_chlorophyll_B <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Chlorophyll_B_mean = mean(Chlorophyll_B), .groups = "drop")
+
+# Prepare the dataset for the last day
+lastday_chlorophyll_B <- medias_df_chlorophyll_B %>%
+  filter(Day == max(medias_df_chlorophyll_B$Day)) %>%
+  left_join(letters_df_chlorophyll_B, by = "Treatment")
+
+# Create the plot for Chlorophyll B
+ggplot(medias_df_chlorophyll_B, aes(x = Day, y = Chlorophyll_B_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_chlorophyll_B, 
+            aes(label = Letters, x = Day + 1, y = Chlorophyll_B_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Chlorophyll B", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 9. Total Chlorophyll
+
+### Statistical Analysis
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Define the model for Total Chlorophyll using the cleaned column name
+modelo_repet <- lme(Total_chlorophyll ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+# Compute emmeans for Total Chlorophyll by Treatment
+emm_treatments_total_chlorophyll <- emmeans(modelo_repet, ~ Treatment)
+
+# Conduct Tukey's HSD and store letters for comparison
+comparisons_total_chlorophyll <- cld(emm_treatments_total_chlorophyll, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+# Extract the groupings (letters) for Total Chlorophyll
+Lettersabc_total_chlorophyll <- comparisons_total_chlorophyll$.group
+
+Lettersabc_total_chlorophyll
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores (again, to ensure consistency)
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Conduct comparisons and assign letters for Total Chlorophyll
+letters_df_total_chlorophyll <- data.frame(Treatment = comparisons_total_chlorophyll$Treatment,
+                                           Letters = comparisons_total_chlorophyll$.group)
+
+# Summarize the mean for Total Chlorophyll by Treatment and Day
+medias_df_total_chlorophyll <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Total_Chlorophyll_mean = mean(Total_chlorophyll), .groups = "drop")
+
+# Prepare the dataset for the last day
+lastday_total_chlorophyll <- medias_df_total_chlorophyll %>%
+  filter(Day == max(medias_df_total_chlorophyll$Day)) %>%
+  left_join(letters_df_total_chlorophyll, by = "Treatment")
+
+# Create the plot for Total Chlorophyll
+ggplot(medias_df_total_chlorophyll, aes(x = Day, y = Total_Chlorophyll_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_total_chlorophyll, 
+            aes(label = Letters, x = Day + 1, y = Total_Chlorophyll_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Total Chlorophyll", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 10. B Carotene
+
+### Statistical Analysis
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Define the model for B carotene using the cleaned column name
+modelo_repet <- lme(`B_carotene` ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+# Compute emmeans for B carotene by Treatment
+emm_treatments_b_carotene <- emmeans(modelo_repet, ~ Treatment)
+
+# Conduct Tukey's HSD and store letters for comparison
+comparisons_b_carotene <- cld(emm_treatments_b_carotene, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+# Extract the groupings (letters) for B carotene
+Lettersabc_b_carotene <- comparisons_b_carotene$.group
+
+Lettersabc_b_carotene
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores (again, to ensure consistency)
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Conduct comparisons and assign letters for B carotene
+letters_df_b_carotene <- data.frame(Treatment = comparisons_b_carotene$Treatment,
+                                    Letters = comparisons_b_carotene$.group)
+
+# Summarize the mean for B carotene by Treatment and Day
+medias_df_b_carotene <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(B_carotene_mean = mean(`B_carotene`), .groups = "drop")
+
+# Prepare the dataset for the last day
+lastday_b_carotene <- medias_df_b_carotene %>%
+  filter(Day == max(medias_df_b_carotene$Day)) %>%
+  left_join(letters_df_b_carotene, by = "Treatment")
+
+# Create the plot for B carotene
+ggplot(medias_df_b_carotene, aes(x = Day, y = B_carotene_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_b_carotene, 
+            aes(label = Letters, x = Day + 1, y = B_carotene_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "B carotene", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 11. Proteins
+
+### Statistical Analysis
+
+```{r, echo=FALSE}
+modelo_repet <- lme(Proteins ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+emm_treatments_proteins <- emmeans(modelo_repet, ~ Treatment)
+
+comparisons_proteins <- cld(emm_treatments_proteins, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+Lettersabc_proteins <- comparisons_proteins$.group
+
+Lettersabc_proteins
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+letters_df_proteins <- data.frame(Treatment = comparisons_proteins$Treatment,
+                                  Letters = comparisons_proteins$.group)
+
+medias_df_proteins <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Proteins_mean = mean(Proteins), .groups = "drop")
+
+lastday_proteins <- medias_df_proteins %>%
+  filter(Day == max(medias_df_proteins$Day)) %>%
+  left_join(letters_df_proteins, by = "Treatment")
+
+ggplot(medias_df_proteins, aes(x = Day, y = Proteins_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_proteins, 
+            aes(label = Letters, x = Day + 1, y = Proteins_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Proteins", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## 12. Yellow Carotenoids
+
+### Statistical Analysis
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Define the model for yellow carotenoids using the cleaned column name
+modelo_repet <- lme(`yellow_carotenoids` ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+# Compute emmeans for yellow carotenoids by Treatment
+emm_treatments_yellow_carotenoids <- emmeans(modelo_repet, ~ Treatment)
+
+# Conduct Tukey's HSD and store letters for comparison
+comparisons_yellow_carotenoids <- cld(emm_treatments_yellow_carotenoids, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+# Extract the groupings (letters) for yellow carotenoids
+Lettersabc_yellow_carotenoids <- comparisons_yellow_carotenoids$.group
+
+Lettersabc_yellow_carotenoids
+```
+
+Significance:
+
+------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+# Clean up column names by replacing spaces with underscores (again, to ensure consistency)
+names(df) <- gsub(" ", "_", names(df))  # Replace spaces with underscores
+
+# Conduct comparisons and assign letters for yellow carotenoids
+letters_df_yellow_carotenoids <- data.frame(Treatment = comparisons_yellow_carotenoids$Treatment,
+                                             Letters = comparisons_yellow_carotenoids$.group)
+
+# Summarize the mean for yellow carotenoids by Treatment and Day
+medias_df_yellow_carotenoids <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(yellow_carotenoids_mean = mean(`yellow_carotenoids`), .groups = "drop")
+
+# Prepare the dataset for the last day
+lastday_yellow_carotenoids <- medias_df_yellow_carotenoids %>%
+  filter(Day == max(medias_df_yellow_carotenoids$Day)) %>%
+  left_join(letters_df_yellow_carotenoids, by = "Treatment")
+
+# Create the plot for yellow carotenoids
+ggplot(medias_df_yellow_carotenoids, aes(x = Day, y = yellow_carotenoids_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_yellow_carotenoids, 
+            aes(label = Letters, x = Day + 1, y = yellow_carotenoids_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Yellow Carotenoids", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```

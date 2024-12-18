@@ -1,17 +1,24 @@
 ---
-title: "Document 5"
+title: "Analysis over time"
 format: html
 editor: visual
 ---
 
-Due to the biomarker assessments and non-enzymatic variables were taken over time, a repeated measures analysis can be performed.
+Due to the bio marker assessments and non-enzymatic variables were taken over time, a repeated measures analysis can be performed.
 
 **Required libraries**
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(lme4)
 library(lmerTest)
 library(ggplot2)
+library(emmeans)
+library(ggsignif)
+library(multcompView)
+library(multcomp)
+library(rstatix)
+library(nlme)
+library(dplyr)
 ```
 
 Call the data
@@ -25,9 +32,324 @@ df <- read_excel("DATA/tomato-clean.xlsx", sheet = 3)
 
 ### Statistical analysis
 
-Fit the mixed-effects model
+### Linear mixed model
 
-```{r}
+```{r, message=FALSE}
+?lmer
 model <- lmer(H202 ~ Day * Treatment + (1 | Block), data = df)
 summary(model)
+```
+
+**Graphic**
+
+```{r}
+df$predicted <- predict(model)
+ggplot(df, aes(x = Day, y = H202, color = Treatment)) +
+  geom_point(alpha = 0.6) +
+  geom_line(aes(y = predicted), size = 1) +
+  theme_minimal() +
+  labs(title = "Effect of the treatment",
+       x = "Day",
+       y = "H202")
+```
+
+## Repeated measures
+
+A repeated measures analysis is a statistical method used when the same subjects (or experimental units) are measured multiple times under different conditions, over time, or across various levels of a factor. It accounts for the fact that repeated observations on the same subject are not independent.
+
+-   **Fixed Effects**:
+
+-   **`H202 ~ Treatment * Day`** includes main effects for `Treatment` and `Day` and their interaction.
+
+-   **Random Effects**:
+
+    -   **`random = ~1 | Block/Samples`** specifies a hierarchical random-effects structure:
+
+        -   **`~1`**: Indicates random intercepts for each grouping level.
+
+        -   **`Block/Samples`**: Models nested random effects:
+
+            -   **`Block`**: Random intercepts for each block.
+
+    -   **`Samples`**: Random intercepts nested within `Block` (e.g., multiple samples taken from each block).
+
+        Once the pairwise was done, the tukey changed to sidak .
+
+        ```         
+        Note: adjust = "tukey" was changed to "sidak" because "tukey" is only appropriate for one set of pairwise comparisons
+        ```
+
+```{r, message=FALSE}
+
+modelo_repet <- lme(H202 ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet
+
+emm_treatments <- emmeans(modelo_repet, ~ Treatment)
+
+comparissons <- cld(emm_treatments, alpha=0.05, Letters=letters, adjust="tukey")
+
+Lettersabc <- comparissons$.group
+Lettersabc
+```
+
+Significance:
+
+```{r}
+emm_data <- as.data.frame(comparissons)
+
+letters_df <- data.frame(Treatment = comparissons$Treatment,
+                         Letters = comparissons$.group)
+
+
+medias_df <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(H202_mean = mean(H202), .groups = "drop")
+
+
+lastday <- medias_df %>%
+  filter(Day == max(medias_df$Day)) %>%
+  left_join(letters_df, by = "Treatment") 
+
+
+ggplot(medias_df, aes(x = Day, y = H202_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday, 
+            aes(label = Letters, x = Day + 1, y = H202_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "H2O2", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## MDA
+
+### Statistical analysis
+
+Because the measurements are repeated over time, a repeated measures analysis will be performed for all variables.
+
+```{r, message=FALSE}
+df$MDA[is.na(df$MDA)] <- mean(df$MDA, na.rm = TRUE)
+modelo_repet <- lme(MDA ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet
+
+
+emm_treatmentsmda <- emmeans(modelo_repet, ~ Treatment)
+
+
+comparisonsmda <- cld(emm_treatmentsmda, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+# Extraer las letras significativas
+Lettersabcmda <- comparisonsmda$.group
+
+# Mostrar las letras significativas
+Lettersabcmda
+```
+
+Significance:
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+letters_df <- data.frame(Treatment = comparisonsmda$Treatment,
+                         Letters = comparisonsmda$.group)
+
+# Calculate means for MDA by Treatment and Day
+medias_df <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(MDA_mean = mean(MDA), .groups = "drop")
+
+# Get data for the last day to display letters on the plot
+lastday <- medias_df %>%
+  filter(Day == max(medias_df$Day)) %>%
+  left_join(letters_df, by = "Treatment")
+
+# Create the plot
+ggplot(medias_df, aes(x = Day, y = MDA_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday, 
+            aes(label = Letters, x = Day + 1, y = MDA_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "MDA", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## Superoxide oxide
+
+### Statistical analysis
+
+```{r, echo=FALSE, message=FALSE}
+modelo_repet <- lme(Superoxide ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet
+
+emm_treatments_superoxide <- emmeans(modelo_repet, ~ Treatment)
+
+#
+comparisons_superoxide <- cld(emm_treatments_superoxide, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+
+Lettersabc_superoxide <- comparisons_superoxide$.group
+
+#
+Lettersabc_superoxide
+
+```
+
+Significance:
+
+```{r,echo=FALSE}
+letters_df <- data.frame(Treatment = comparisons_superoxide$Treatment,
+                         Letters = comparisons_superoxide$.group)
+
+
+medias_df <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Superoxide_mean = mean(Superoxide), .groups = "drop")
+
+
+lastday <- medias_df %>%
+  filter(Day == max(medias_df$Day)) %>%
+  left_join(letters_df, by = "Treatment")
+
+
+ggplot(medias_df, aes(x = Day, y = Superoxide_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday, 
+            aes(label = Letters, x = Day + 1, y = Superoxide_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Superoxide", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## Phenols
+
+### Statistical analysis
+
+```{r, echo=FALSE}
+modelo_repet <- lme(Phenols ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+
+emm_treatments_phenols <- emmeans(modelo_repet, ~ Treatment)
+
+
+comparisons_phenols <- cld(emm_treatments_phenols, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+
+Lettersabc_phenols <- comparisons_phenols$.group
+
+
+Lettersabc_phenols
+```
+
+Significance
+
+```{r,echo=FALSE}
+letters_df_phenols <- data.frame(Treatment = comparisons_phenols$Treatment,
+                                 Letters = comparisons_phenols$.group)
+
+
+medias_df_phenols <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Phenols_mean = mean(Phenols), .groups = "drop")
+
+
+lastday_phenols <- medias_df_phenols %>%
+  filter(Day == max(medias_df_phenols$Day)) %>%
+  left_join(letters_df_phenols, by = "Treatment")
+
+
+ggplot(medias_df_phenols, aes(x = Day, y = Phenols_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_phenols, 
+            aes(label = Letters, x = Day + 1, y = Phenols_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Phenols", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## Flavonoids
+
+```{r, echo=FALSE}
+modelo_repet <- lme(Flavonoids ~ Treatment * Day, random = ~1 | Block/Samples, data = df)
+modelo_repet  
+
+
+emm_treatments_flavonoids <- emmeans(modelo_repet, ~ Treatment)
+
+
+comparisons_flavonoids <- cld(emm_treatments_flavonoids, alpha = 0.05, Letters = letters, adjust = "tukey")
+
+
+Lettersabc_flavonoids <- comparisons_flavonoids$.group
+
+
+Lettersabc_flavonoids
+```
+
+Significance:
+
+```{r, echo=FALSE}
+letters_df_flavonoids <- data.frame(Treatment = comparisons_flavonoids$Treatment,
+                                    Letters = comparisons_flavonoids$.group)
+
+
+medias_df_flavonoids <- df %>%
+  group_by(Treatment, Day) %>%
+  summarise(Flavonoids_mean = mean(Flavonoids), .groups = "drop")
+
+
+lastday_flavonoids <- medias_df_flavonoids %>%
+  filter(Day == max(medias_df_flavonoids$Day)) %>%
+  left_join(letters_df_flavonoids, by = "Treatment")
+
+
+ggplot(medias_df_flavonoids, aes(x = Day, y = Flavonoids_mean, group = Treatment, color = Treatment)) +
+  geom_line(size = 1) +  
+  geom_point(size = 2) + 
+  geom_text(data = lastday_flavonoids, 
+            aes(label = Letters, x = Day + 1, y = Flavonoids_mean), 
+            hjust = 0, size = 5, inherit.aes = FALSE) +  
+  labs(x = "Days", 
+       y = "Flavonoids", 
+       color = "Treatment") +
+  scale_color_discrete(name = "Treatment") + 
+  theme_minimal() +
+  theme(axis.text = element_text(size = 12),
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10))
+```
+
+## Vitamin C
+
+```         
 ```
